@@ -15,6 +15,8 @@ import (
 	"strings"
 )
 
+const version string = "cruiseTrack2kml, version 0.1  Jgrelet IRD - Cassiopee cruise - R/V Atalante"
+
 var tsg_file_windows = "M:/CASSIOPEE/data-processing/THERMO/cassiopee.gps"
 var ctd_file_windows = "M:/CASSIOPEE/data-processing/CTD/cassiopee.ctd"
 var kml_file_windows = "M:/CASSIOPEE/data-processing/CTD/tracks/cassiopee.kml"
@@ -46,7 +48,7 @@ func Position2Decimal(pos string) (float64, error) {
 		tmp := math.Abs(min)
 		sec := (tmp - min) * 100.0
 		value = (deg + (min+sec/100.0)/60.0) * multiplier
-		fmt.Println("positionDeci:", pos, " -> ", value)
+		//fmt.Println("positionDeci:", pos, " -> ", value)
 	} else {
 		return 1e36, errors.New("positionDeci: failed to decode position")
 	}
@@ -58,6 +60,9 @@ func main() {
 	var tsg_file string
 	var ctd_file string
 	var kml_file string
+
+	// print version
+	fmt.Println(version)
 
 	// create KML header
 	k := gokml.NewKML("Cassiopee KML")
