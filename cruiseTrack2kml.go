@@ -17,9 +17,11 @@ import (
 
 var tsg_file_windows = "M:/CASSIOPEE/data-processing/THERMO/cassiopee.gps"
 var ctd_file_windows = "M:/CASSIOPEE/data-processing/CTD/cassiopee.ctd"
+var kml_file_windows = "M:/CASSIOPEE/data-processing/CTD/tracks/cassiopee.kml"
 
 var tsg_file_unix = "/m/CASSIOPEE/data-processing/THERMO/cassiopee.gps"
 var ctd_file_unix = "/m/CASSIOPEE/data-processing/CTD/cassiopee.ctd"
+var kml_file_unix = "/m/CASSIOPEE/data-processing/CTD/tracks/cassiopee.kml"
 
 // usefull macro
 var p = fmt.Println
@@ -55,6 +57,7 @@ func main() {
 
 	var tsg_file string
 	var ctd_file string
+	var kml_file string
 
 	// create KML header
 	k := gokml.NewKML("Cassiopee KML")
@@ -77,9 +80,11 @@ func main() {
 	if runtime.GOOS == "windows" {
 		tsg_file = tsg_file_windows
 		ctd_file = ctd_file_windows
+		kml_file = kml_file_windows
 	} else {
 		tsg_file = tsg_file_unix
 		ctd_file = ctd_file_unix
+		kml_file = kml_file_unix
 	}
 	fid_tsg, err := os.Open(tsg_file)
 	if err != nil {
@@ -153,7 +158,7 @@ func main() {
 	fmt.Printf("%s", k.Render())
 
 	// open ASCII file for writing result
-	fid_kml, err := os.Create("M:/CASSIOPEE/data-processing/CTD/tracks/cassiopee.kml")
+	fid_kml, err := os.Create(kml_file)
 	if err != nil {
 		os.Exit(2)
 	}
