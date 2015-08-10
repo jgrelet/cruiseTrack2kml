@@ -13,6 +13,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const version string = "cruiseTrack2kml, version 0.1  Jgrelet IRD - Cassiopee cruise - R/V Atalante"
@@ -63,6 +64,7 @@ func main() {
 
 	// print version
 	fmt.Println(version)
+	fmt.Println(time.Now().Format(time.RFC850))
 
 	// create KML header
 	k := gokml.NewKML("Cassiopee KML")
