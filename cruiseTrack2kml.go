@@ -145,6 +145,17 @@ func main() {
 		if profile == "CASSIOPEE" {
 			continue
 		}
+		begin_date := values[1]
+		begin_hour := values[2]
+		end_date := values[3]
+		end_hour := values[4]
+		lat := fmt.Sprintf("%s %s", values[5], values[6])
+		lon := fmt.Sprintf("%s %s", values[7], values[8])
+		pmax := values[9]
+		bottom_depth := values[10]
+		type_cast := values[11]
+		filename := values[12]
+
 		if latitude, err = Position2Decimal(fmt.Sprintf("%s %s", values[5], values[6])); err != nil {
 			os.Exit(3)
 		}
@@ -153,7 +164,9 @@ func main() {
 			os.Exit(4)
 		}
 		st := gokml.NewPoint(latitude, longitude, 0.0)
-		description := fmt.Sprintf("<![CDATA[\n<img src='http://atalante/cassiopee/data-processing/CTD/plots/downcast/dcsp%s-TS02Dens.jpg' width='800' /><br/&gt;%d<br/> ]]>", profile, i)
+		header := fmt.Sprintf("\n<pre>Station %s  Type: %s  Filename: %s\nBegin Date: %s %s  End Date: %s %s\nLatitude: %s  Longitude: %s \nMax depth: %s   Bathy: %s</pre>\n",
+			profile, type_cast, filename, begin_date, begin_hour, end_date, end_hour, lat, lon, pmax, bottom_depth)
+		description := fmt.Sprintf("%s<![CDATA[\n<img src='http://atalante/cassiopee/data-processing/CTD/plots/downcast/dcsp%s-TS02Dens.jpg' width='900' /><br/&gt;%d<br/> ]]>", header, profile, i)
 		pm := gokml.NewPlacemark(fmt.Sprintf("%d", i), description, st)
 		pm.SetStyle("ProfileStyle")
 		f.AddFeature(pm)
