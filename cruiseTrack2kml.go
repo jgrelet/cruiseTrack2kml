@@ -61,6 +61,7 @@ func main() {
 	var tsg_file string
 	var ctd_file string
 	var kml_file string
+	var latitude, longitude float64
 
 	// print version
 	fmt.Println(version)
@@ -68,7 +69,7 @@ func main() {
 
 	// create KML header
 	k := gokml.NewKML("Cassiopee KML")
-	f := gokml.NewFolder("Cassiopee Folder", "This is Cassiopee cruise folder")
+	f := gokml.NewFolder("Cassiopee cruise", "This is Cassiopee cruise folder in July-Aug 2015")
 	k.AddFeature(f)
 
 	// define new style for station icons
@@ -116,13 +117,17 @@ func main() {
 
 		// create new point
 		np := gokml.NewPoint(lat, lon, 0.0)
-		// set point to line
+		// add point to line
 		ls.AddPoint(np)
 	}
 
+	// fill description markup with the TSG picture link inside <![CDATA[...]]>
+	// All characters enclosed between these two sequences are interpreted as characters
+	description := fmt.Sprintf("<![CDATA[\n<img src='http://atalante/cassiopee/data-processing/THERMO/plots/CASSIOPEE-TSG.png' width='700' /><br/&gt;%d<br/> ]]>")
 	// define block Placemark for line
-	pm := gokml.NewPlacemark("Atalante track", "", ls)
+	pm := gokml.NewPlacemark("Cassiopee cruise track on R/V Atalante", description, ls)
 	pm.SetStyle("TrackStyle")
+	// add placemark markup to kml file
 	f.AddFeature(pm)
 
 	// read CTD position
@@ -132,8 +137,6 @@ func main() {
 	}
 	defer fid_ctd.Close()
 
-	var latitude, longitude float64
-
 	scanner_ctd := bufio.NewScanner(fid_ctd)
 	var i int = 1
 
@@ -141,10 +144,13 @@ func main() {
 		str := scanner_ctd.Text()
 		values := strings.Fields(str)
 		//p(values)
+
+		// skip first line
 		profile := values[0]
 		if profile == "CASSIOPEE" {
 			continue
 		}
+		// extract data from station line
 		begin_date := values[1]
 		begin_hour := values[2]
 		end_date := values[3]
@@ -156,19 +162,26 @@ func main() {
 		type_cast := values[11]
 		filename := values[12]
 
+		// convert position to decimal values
 		if latitude, err = Position2Decimal(fmt.Sprintf("%s %s", values[5], values[6])); err != nil {
 			os.Exit(3)
 		}
-		fmt.Sprintf("Long: %s %s\n", values[7])
 		if longitude, err = Position2Decimal(fmt.Sprintf("%s %s", values[7], values[8])); err != nil {
 			os.Exit(4)
 		}
+		// add positions of stations on map
+		// create new point for station
 		st := gokml.NewPoint(latitude, longitude, 0.0)
+		// fill Ascii header from CTD file, use <pre> markup for LF
 		header := fmt.Sprintf("\n<pre>Station %s  Type: %s  Filename: %s\nBegin Date: %s %s  End Date: %s %s\nLatitude: %s  Longitude: %s \nMax depth: %s   Bathy: %s</pre>\n",
 			profile, type_cast, filename, begin_date, begin_hour, end_date, end_hour, lat, lon, pmax, bottom_depth)
+		// fill description markup with the CTD picture link inside <![CDATA[...]]>
+		// All characters enclosed between these two sequences are interpreted as characters
 		description := fmt.Sprintf("%s<![CDATA[\n<img src='http://atalante/cassiopee/data-processing/CTD/plots/downcast/dcsp%s-TS02Dens.jpg' width='700' /><br/&gt;%d<br/> ]]>", header, profile, i)
+		// add new Placemark markup with station number, description and location (point object)
 		pm := gokml.NewPlacemark(fmt.Sprintf("%d", i), description, st)
 		pm.SetStyle("ProfileStyle")
+		// add placemark markup to kml file
 		f.AddFeature(pm)
 		i++
 	}
