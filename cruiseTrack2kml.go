@@ -123,7 +123,7 @@ func main() {
 
 	// fill description markup with the TSG picture link inside <![CDATA[...]]>
 	// All characters enclosed between these two sequences are interpreted as characters
-	description := fmt.Sprintf("<![CDATA[\n<img src='http://atalante/cassiopee/data-processing/THERMO/plots/CASSIOPEE-TSG.png' width='700' /><br/&gt;%d<br/> ]]>")
+	description := fmt.Sprintf("<![CDATA[\n<img src='http://atalante/cassiopee/data-processing/THERMO/plots/CASSIOPEE-TSG.png' width='700'/>]]>")
 	// define block Placemark for line
 	pm := gokml.NewPlacemark("Cassiopee cruise track on R/V Atalante", description, ls)
 	pm.SetStyle("TrackStyle")
@@ -173,11 +173,11 @@ func main() {
 		// create new point for station
 		st := gokml.NewPoint(latitude, longitude, 0.0)
 		// fill Ascii header from CTD file, use <pre> markup for LF
-		header := fmt.Sprintf("\n<pre>Station %s  Type: %s  Filename: %s\nBegin Date: %s %s  End Date: %s %s\nLatitude: %s  Longitude: %s \nMax depth: %s   Bathy: %s</pre>\n",
+		header := fmt.Sprintf("\n<pre>Station n° %s  Type: %s  Filename: %s\nBegin Date: %s %s  End Date: %s %s\nLatitude: %s  Longitude: %s \nMax depth: %s   Bathy: %s</pre>\n",
 			profile, type_cast, filename, begin_date, begin_hour, end_date, end_hour, lat, lon, pmax, bottom_depth)
 		// fill description markup with the CTD picture link inside <![CDATA[...]]>
 		// All characters enclosed between these two sequences are interpreted as characters
-		description := fmt.Sprintf("%s<![CDATA[\n<img src='http://atalante/cassiopee/data-processing/CTD/plots/downcast/dcsp%s-TS02Dens.jpg' width='700' /><br/&gt;%d<br/> ]]>", header, profile, i)
+		description := fmt.Sprintf("%s<![CDATA[\n<img src='http://atalante/cassiopee/data-processing/CTD/plots/downcast/dcsp%s-TS02Dens.jpg' width='700' />]]>", header, profile)
 		// add new Placemark markup with station number, description and location (point object)
 		pm := gokml.NewPlacemark(fmt.Sprintf("%d", i), description, st)
 		pm.SetStyle("ProfileStyle")
