@@ -166,7 +166,7 @@ func main() {
 		st := gokml.NewPoint(latitude, longitude, 0.0)
 		header := fmt.Sprintf("\n<pre>Station %s  Type: %s  Filename: %s\nBegin Date: %s %s  End Date: %s %s\nLatitude: %s  Longitude: %s \nMax depth: %s   Bathy: %s</pre>\n",
 			profile, type_cast, filename, begin_date, begin_hour, end_date, end_hour, lat, lon, pmax, bottom_depth)
-		description := fmt.Sprintf("%s<![CDATA[\n<img src='http://atalante/cassiopee/data-processing/CTD/plots/downcast/dcsp%s-TS02Dens.jpg' width='900' /><br/&gt;%d<br/> ]]>", header, profile, i)
+		description := fmt.Sprintf("%s<![CDATA[\n<img src='http://atalante/cassiopee/data-processing/CTD/plots/downcast/dcsp%s-TS02Dens.jpg' width='700' /><br/&gt;%d<br/> ]]>", header, profile, i)
 		pm := gokml.NewPlacemark(fmt.Sprintf("%d", i), description, st)
 		pm.SetStyle("ProfileStyle")
 		f.AddFeature(pm)
