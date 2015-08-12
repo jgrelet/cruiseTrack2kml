@@ -123,7 +123,7 @@ func main() {
 
 	// fill description markup with the TSG picture link inside <![CDATA[...]]>
 	// All characters enclosed between these two sequences are interpreted as characters
-	description := fmt.Sprintf("<![CDATA[\n<img src='http://atalante/cassiopee/data-processing/THERMO/plots/CASSIOPEE-TSG.png' width='700'/>]]>")
+	description := fmt.Sprintf("<![CDATA[\n<img src='http://atalante/cassiopee/data-processing/THERMO/plots/CASSIOPEE-TSG.png' width='700' />]]>")
 	// define block Placemark for line
 	pm := gokml.NewPlacemark("Cassiopee cruise track on R/V Atalante", description, ls)
 	pm.SetStyle("TrackStyle")
