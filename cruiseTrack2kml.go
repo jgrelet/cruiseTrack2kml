@@ -4,6 +4,7 @@ package main
 import (
 	"bufio"
 	"errors"
+	"flag"
 	"fmt"
 	"github.com/gershwinlabs/gokml"
 	"log"
@@ -16,7 +17,12 @@ import (
 	"time"
 )
 
-const version string = "cruiseTrack2kml, version 0.1  Jgrelet IRD - Cassiopee cruise - R/V Atalante"
+// arg var
+var (
+	cruise *string
+)
+
+const version string = "cruiseTrack2kml, version 0.2  J.Grelet IRD - US191 IMAGO"
 
 var tsg_file_windows = "M:/CASSIOPEE/data-processing/THERMO/cassiopee.gps"
 var ctd_file_windows = "M:/CASSIOPEE/data-processing/CTD/cassiopee.ctd"
@@ -29,6 +35,11 @@ var kml_file_unix = "/m/CASSIOPEE/data-processing/CTD/tracks/cassiopee.kml"
 // usefull macro
 var p = fmt.Println
 var f = fmt.Printf
+
+// Basic flag declarations are available for string, integer, and boolean options.
+func init() {
+	cruise = flag.String("cruise", "file name", "a string")
+}
 
 // convert position "DD MM.SS S" to decimal position
 func Position2Decimal(pos string) (float64, error) {
@@ -123,7 +134,7 @@ func main() {
 
 	// fill description markup with the TSG picture link inside <![CDATA[...]]>
 	// All characters enclosed between these two sequences are interpreted as characters
-	description := fmt.Sprintf("<![CDATA[\n<img src='http://atalante/cassiopee/data-processing/THERMO/plots/CASSIOPEE-TSG.png' width='700' />]]>")
+	description := fmt.Sprintf("<![CDATA[\n<img src='http://www.brest.ird.fr/us191/cruises/cassiopee/THERMO/plots/CASSIOPEE-TSG.png' width='700' />]]>")
 	// define block Placemark for line
 	pm := gokml.NewPlacemark("Cassiopee cruise track on R/V Atalante", description, ls)
 	pm.SetStyle("TrackStyle")
@@ -177,7 +188,7 @@ func main() {
 			profile, type_cast, filename, begin_date, begin_hour, end_date, end_hour, lat, lon, pmax, bottom_depth)
 		// fill description markup with the CTD picture link inside <![CDATA[...]]>
 		// All characters enclosed between these two sequences are interpreted as characters
-		description := fmt.Sprintf("%s<![CDATA[\n<img src='http://atalante/cassiopee/data-processing/CTD/plots/downcast/dcsp%s-TS02Dens.jpg' width='700' />]]>", header, profile)
+		description := fmt.Sprintf("%s<![CDATA[\n<img src='http://www.brest.ird.fr/us191/cruises/cassiopee/CTD/plots/dcsp%s-TS02Dens.jpg' width='700' />]]>", header, profile)
 		// add new Placemark markup with station number, description and location (point object)
 		pm := gokml.NewPlacemark(fmt.Sprintf("%d", i), description, st)
 		pm.SetStyle("ProfileStyle")
