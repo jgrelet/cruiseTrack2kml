@@ -3,10 +3,16 @@
 cruise = "CASSIOPEE"
 ship = "ATALANTE"
 
+ctd_plots = "E:/campagnes/CASSIOPEE/data-processing/CTD/plots/downcast/dcsp%s-TS02Dens.jpg"
+ctd_prefix = 5
+tsg_plots = "E:/campagnes/CASSIOPEE/data-processing/THERMO/plots/CASSIOPEE-TSG.png"
+size_plots = 700
+
 [windows]
-tsg_file = "M:/CASSIOPEE/data-processing/THERMO/cassiopee.gps"
-ctd_file = "M:/CASSIOPEE/data-processing/CTD/cassiopee.ctd"
-kml_file = "M:/CASSIOPEE/data-processing/CTD/tracks/cassiopee.kml"
+tsg_file = "E:/campagnes/CASSIOPEE/data-processing/THERMO/cassiopee.gps"
+ctd_file = "E:/campagnes/CASSIOPEE/data-processing/CTD/cassiopee.ctd"
+#kml_file = "E:/campagnes/CASSIOPEE/data-processing/CTD/tracks/cassiopee.kml"
+kml_file = "cassiopee.kml"
 
 [unix]
 tsg_file = "/m/CASSIOPEE/data-processing/THERMO/cassiopee.gps"

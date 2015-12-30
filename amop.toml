@@ -3,14 +3,15 @@
 cruise = "AMOP"
 ship = "ATALANTE"
 
-ctd_plots = "C:/Users/jgrelet/go/src/github.com/jgrelet/cruiseTrack2kml/data/amop/ctd/dam%s.jpg"
-tsg_plots = "C:/Users/jgrelet/go/src/github.com/jgrelet/cruiseTrack2kml/data/amop/tsg/AMOP-TSG-SST-SSPS-scatter.png"
-#http:gcwww.brest.ird.fr/us191/cruises/cassiopee/CTD/plots/dcsp%s-TS02Dens.jpg'
+ctd_plots = "data/amop/ctd/dam%s.jpg"
+ctd_prefix = 5
+tsg_plots = "data/amop/tsg/AMOP-TSG-SST-SSPS-scatter.png"
+size_plots = 700
 
 [windows]
-tsg_file = "C:/Users/jgrelet/go/src/github.com/jgrelet/cruiseTrack2kml/data/amop/amop.gps"
-ctd_file = "C:/Users/jgrelet/go/src/github.com/jgrelet/cruiseTrack2kml/data/amop/amop.ctd"
-kml_file = "C:/Users/jgrelet/go/src/github.com/jgrelet/cruiseTrack2kml/amop.kml"
+tsg_file = "data/amop/amop.gps"
+ctd_file = "data/amop/amop.ctd"
+kml_file = "amop.kml"
 
 [unix]
 tsg_file = "./data/amop/amop.gps"

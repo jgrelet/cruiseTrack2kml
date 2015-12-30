@@ -283,4 +283,7 @@ func main() {
 	// write kml to file
 	fmt.Fprintln(fbuf_kml, k.Render())
 	fbuf_kml.Flush()
+
+	// display the filename to screen
+	p(kml_file)
 }
