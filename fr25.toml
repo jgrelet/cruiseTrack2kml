@@ -1,0 +1,20 @@
+# this is a configuration file for cruiseTrack2kml program
+
+cruise = "PIRATA-FR25"
+ship = "THALASSA"
+
+ctd_plots = "data/fr25/ctd/dfr25%s.jpg"
+ctd_prefix = 3
+tsg_plots = "data/fr25/tsg/PIRATA-FR25_TSG_SCATTER.png"
+#http:gcwww.brest.ird.fr/us191/cruises/cassiopee/CTD/plots/dcsp%s-TS02Dens.jpg'
+size_plots = 700
+
+[windows]
+tsg_file = "data/fr25/pirata-fr25.gps"
+ctd_file = "data/fr25/pirata-fr25.ctd"
+kml_file = "pirata-fr25.kml"
+
+[unix]
+tsg_file = "./data/fr25/pirata-fr25.gps"
+ctd_file = "./data/fr25/pirata-fr25.ctd"
+kml_file = "./pirata-fr25.kml"

@@ -1,0 +1,14 @@
+# this is a configuration file for cruiseTrack2kml program
+
+cruise = "CASSIOPEE"
+ship = "ATALANTE"
+
+[windows]
+tsg_file = "M:/CASSIOPEE/data-processing/THERMO/cassiopee.gps"
+ctd_file = "M:/CASSIOPEE/data-processing/CTD/cassiopee.ctd"
+kml_file = "M:/CASSIOPEE/data-processing/CTD/tracks/cassiopee.kml"
+
+[unix]
+tsg_file = "/m/CASSIOPEE/data-processing/THERMO/cassiopee.gps"
+ctd_file = "/m/CASSIOPEE/data-processing/CTD/cassiopee.ctd"
+kml_file = "/m/CASSIOPEE/data-processing/CTD/tracks/cassiopee.kml"
