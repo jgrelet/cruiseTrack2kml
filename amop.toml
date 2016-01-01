@@ -7,6 +7,7 @@ ctd_plots = "data/amop/ctd/dam%s.jpg"
 ctd_prefix = 5
 tsg_plots = "data/amop/tsg/AMOP-TSG-SST-SSPS-scatter.png"
 size_plots = 700
+station_number = true
 
 [windows]
 tsg_file = "data/amop/amop.gps"

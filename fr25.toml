@@ -8,6 +8,7 @@ ctd_prefix = 3
 tsg_plots = "data/fr25/tsg/PIRATA-FR25_TSG_SCATTER.png"
 #http:gcwww.brest.ird.fr/us191/cruises/cassiopee/CTD/plots/dcsp%s-TS02Dens.jpg'
 size_plots = 700
+station_number = true
 
 [windows]
 tsg_file = "data/fr25/pirata-fr25.gps"

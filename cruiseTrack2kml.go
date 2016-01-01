@@ -42,10 +42,11 @@ type tomlConfig struct {
 		Ctd_file string
 		Kml_file string
 	}
-	Ctd_plots  string
-	Tsg_plots  string
-	Ctd_prefix int
-	Size_plots int
+	Ctd_plots      string
+	Tsg_plots      string
+	Ctd_prefix     int
+	Size_plots     int
+	Station_number bool
 }
 
 // usefull macro
@@ -242,26 +243,42 @@ func main() {
 		}
 
 		// convert position to decimal values
-		if latitude, err = Position2Decimal(fmt.Sprintf("%s %s", values[5], values[6])); err != nil {
+		if latitude, err = Position2Decimal(fmt.Sprintf("%s %s", values[5],
+			values[6])); err != nil {
 			log.Fatal(err)
 		}
-		if longitude, err = Position2Decimal(fmt.Sprintf("%s %s", values[7], values[8])); err != nil {
+		if longitude, err = Position2Decimal(fmt.Sprintf("%s %s", values[7],
+			values[8])); err != nil {
 			log.Fatal(err)
 		}
 		// add positions of stations on map
 		// create new point for station
 		st := gokml.NewPoint(latitude, longitude, 0.0)
+
 		// fill Ascii header from CTD file, use <pre> markup for LF
-		header := fmt.Sprintf("\n<pre>Station n° %s  Type: %s  Filename: %s\nBegin Date: %s %s  End Date: %s %s\nLatitude: %s  Longitude: %s \nMax depth: %s   Bathy: %s</pre>\n",
-			profile, type_cast, filename, begin_date, begin_hour, end_date, end_hour, lat, lon, pmax, bottom_depth)
+		header := fmt.Sprintf("\n<pre>Station n° %s  Type: %s  Filename: %s\n"+
+			"Begin Date: %s %s  End Date: %s %s\nLatitude: %s  Longitude: %s \n"+
+			"Max depth: %s   Bathy: %s</pre>\n",
+			profile, type_cast, filename, begin_date, begin_hour,
+			end_date, end_hour, lat, lon, pmax, bottom_depth)
+
 		// fill description markup with the CTD picture link inside <![CDATA[...]]>
 		// All characters enclosed between these two sequences are interpreted as characters
 		files := fmt.Sprintf(config.Ctd_plots, profile)
 		description := fmt.Sprintf("%s<![CDATA[\n<img src='%s' width='%d' />]]>",
 			header, files, config.Size_plots)
+
 		// add new Placemark markup with station number, description and location (point object)
-		pm := gokml.NewPlacemark(fmt.Sprintf("%d", i), description, st)
+		//
+		var newName string
+		if config.Station_number {
+			newName = fmt.Sprintf("%s", profile)
+		} else {
+			newName = fmt.Sprintf("%d", i)
+		}
+		pm := gokml.NewPlacemark(newName, description, st)
 		pm.SetStyle("ProfileStyle")
+
 		// add placemark markup to kml file
 		f.AddFeature(pm)
 		i++
