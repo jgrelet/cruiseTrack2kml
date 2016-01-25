@@ -5,9 +5,6 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"github.com/BurntSushi/toml"
-	"github.com/gershwinlabs/gokml"
-	flag "github.com/tcnksm/mflag"
 	"log"
 	"math"
 	"os"
@@ -16,6 +13,11 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/BurntSushi/toml"
+	"github.com/gershwinlabs/gokml"
+	"github.com/jgrelet/cruiseTrack2kml/fileExtractor"
+	flag "github.com/tcnksm/mflag"
 )
 
 // arg var

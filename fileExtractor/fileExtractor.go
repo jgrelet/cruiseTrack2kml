@@ -14,24 +14,24 @@ type FileExtractOptions struct {
 	filename string
 	hdr      []string
 	varsList map[string]int
-	skip     int // number of line to skip before read data
+	skipLine int // number of line to skip before read data
 }
 
 // FileExtracter contains FileExtractOptions object and map data extracted from ASCII file.
 type FileExtracter struct {
-	options FileExtractOptions
-	data    map[string]interface{}
+	*FileExtractOptions
+	data map[string]interface{}
+	size int
 }
 
 // NewFileExtractOptions will create a new FileExtractOptions type with some
-// default values.
-//   all empty ...
+// empty default values.
 func NewFileExtractOptions() *FileExtractOptions {
 	o := &FileExtractOptions{
 		filename: "",
 		hdr:      []string{},
 		varsList: map[string]int{},
-		skip:     0,
+		skipLine: 0,
 	}
 	return o
 }
@@ -67,26 +67,42 @@ func (o *FileExtractOptions) VarsList() map[string]int {
 	return o.varsList
 }
 
+// SetSkipLine will set to skip header line
+func (o *FileExtractOptions) SetSkipLine(line int) *FileExtractOptions {
+	o.skipLine = line
+	return o
+}
+
 // display FileExtractOptions object
 func (o FileExtractOptions) String() string {
-	return fmt.Sprintf("File: %s\nFields:%s\nVars: %v\n", o.filename, o.hdr, o.varsList)
+	return fmt.Sprintf("File: %s\nFields:%s\nVars: %v SkipLine: %d\n",
+		o.filename, o.hdr, o.varsList, o.skipLine)
 }
 
 // NewFileExtracter will create a new FileExtracter type with some values from
-// configuration (not implemented) or from constructor (setter methods)
+// configuration (not implemented)
 func NewFileExtracter(o *FileExtractOptions) *FileExtracter {
-	fe := &FileExtracter{}
-	fe.options = *o
-	fe.data = make(map[string]interface{})
-	for _, name := range fe.options.hdr {
+	// in this constructor, we use composition (or embedding) vs inheritance
+	fe := &FileExtracter{
+		FileExtractOptions: o,
+		data:               make(map[string]interface{}),
+		size:               0,
+	}
+	// initialize map for each key to a slice
+	for _, name := range fe.hdr {
 		fe.data[name] = []float64{}
 	}
 	return fe
 }
 
+// get the the size of map data
+func (fe FileExtracter) Size() int {
+	return fe.size
+}
+
 // Read an ASCII file and extract data and save then to map data
 func (ext *FileExtracter) Read() {
-	fid, err := os.Open(ext.options.filename)
+	fid, err := os.Open(ext.filename)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -95,23 +111,36 @@ func (ext *FileExtracter) Read() {
 	// open bufio for file
 	scanner := bufio.NewScanner(fid)
 
+	// skip some lines
+	for i := 0; i < ext.skipLine; i++ {
+		scanner.Scan()
+	}
+
 	// read file
 	for scanner.Scan() {
 		// parse each line to string
 		str := scanner.Text()
 		values := strings.Fields(str)
 		// fill map data
-		for key, column := range ext.options.varsList {
+		for key, column := range ext.varsList {
 			if v, err := strconv.ParseFloat(values[column], 64); err == nil {
 				ext.data[key] = append(ext.data[key].([]float64), v)
+				ext.size += 1
+			} else {
+				log.Fatalf("Bad format: %v.  Expected float number, may be skip line", err)
 			}
 		}
 	}
 }
 
+// get the the size of map data
+func (fe *FileExtracter) Data() map[string]interface{} {
+	return fe.data
+}
+
 // print the result
 func (ext FileExtracter) Print() {
-	for key, _ := range ext.options.varsList {
+	for key, _ := range ext.varsList {
 		fmt.Printf("%s: %7.3f\n", key, ext.data[key])
 	}
 	fmt.Println()
