@@ -32,13 +32,15 @@ func main() {
 	// read the file
 	ext.Read()
 
-	p(ext.Size())
-	//	lats := ext.Data()["LATITUDE"]
-	//	for i := 0; i < ext.Size(); i++ {
-	//		lat := lats[i]
-	//		p(lat)
-	//	}
+	// display the value
+	lats := ext.Data()["LATITUDE"]
+	lons := ext.Data()["LONGITUDE"]
+	for i := 0; i < ext.Size(); i++ {
+		lat := lats[i]
+		lon := lons[i]
+		pf("%f\t%f\n", lat, lon)
+	}
 	// display result for test
-	ext.Print()
+	//ext.Print()
 
 }

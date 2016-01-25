@@ -49,6 +49,8 @@ type tomlConfig struct {
 	Ctd_prefix     int
 	Size_plots     int
 	Station_number bool
+	Tsg_split      string
+	Tsg_skip       int
 }
 
 // usefull macro
@@ -155,27 +157,29 @@ func main() {
 	track := gokml.NewStyle("TrackStyle", 255, 0, 255, 0)
 	f.AddFeature(track)
 
-	// read TSG track
-	fid_tsg, err := os.Open(tsg_file)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer fid_tsg.Close()
-
-	// open bufio for tsg
-	scanner_tsg := bufio.NewScanner(fid_tsg)
-
 	// define new line
 	ls := gokml.NewLineString()
 
-	// read tsg file
-	for scanner_tsg.Scan() {
-		// parse lat and lon from file, columns 2 and 3
-		str := scanner_tsg.Text()
-		values := strings.Fields(str)
-		//p(values)
-		lat, _ := strconv.ParseFloat(values[1], 64)
-		lon, _ := strconv.ParseFloat(values[2], 64)
+	// read TSG track
+	opts := fileExtractor.NewFileExtractOptions().SetFilename(tsg_file)
+	opts.SetVarsList(config.Tsg_split)
+	opts.SetSkipLine(config.Tsg_skip)
+
+	// print options
+	p(opts)
+
+	// initialize fileExtractor from options
+	ext := fileExtractor.NewFileExtracter(opts)
+
+	// read the file
+	ext.Read()
+
+	// display the value
+	lats := ext.Data()["LATITUDE"]
+	lons := ext.Data()["LONGITUDE"]
+	for i := 0; i < ext.Size(); i++ {
+		lat := lats[i]
+		lon := lons[i]
 
 		// create new point
 		np := gokml.NewPoint(lat, lon, 0.0)
