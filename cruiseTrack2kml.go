@@ -230,16 +230,15 @@ func main() {
 		lon := fmt.Sprintf("%s %s", values[7], values[8])
 		pmax := values[9]
 		bottom_depth := values[10]
-
 		if len(values) > 11 {
-			type_cast = values[11]
+			filename = values[11]
 		} else {
-			type_cast = ""
+			filename = " "
 		}
 		if len(values) > 12 {
-			filename = values[12]
+			type_cast = values[12]
 		} else {
-			filename = ""
+			type_cast = " "
 		}
 
 		// convert position to decimal values
