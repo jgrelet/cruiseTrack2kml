@@ -17,8 +17,8 @@ type FileExtractOptions struct {
 	skipLine int // number of line to skip before read data
 }
 
-// FileExtracter contains FileExtractOptions object and map data extracted from ASCII file.
-type FileExtracter struct {
+// FileExtractor contains FileExtractOptions object and map data extracted from ASCII file.
+type FileExtractor struct {
 	*FileExtractOptions
 	data map[string][]float64
 	size int
@@ -75,15 +75,15 @@ func (o *FileExtractOptions) SetSkipLine(line int) *FileExtractOptions {
 
 // display FileExtractOptions object
 func (o FileExtractOptions) String() string {
-	return fmt.Sprintf("File: %s\nFields:%s\nVars: %v SkipLine: %d\n",
+	return fmt.Sprintf("File: %s\nFields:%s\nVars: %v\nSkipLine: %d\n",
 		o.filename, o.hdr, o.varsList, o.skipLine)
 }
 
-// NewFileExtracter will create a new FileExtracter type with some values from
+// NewFileExtracter will create a new FileExtractor type with some values from
 // configuration (not implemented)
-func NewFileExtracter(o *FileExtractOptions) *FileExtracter {
+func NewFileExtractor(o *FileExtractOptions) *FileExtractor {
 	// in this constructor, we use composition (or embedding) vs inheritance
-	fe := &FileExtracter{
+	fe := &FileExtractor{
 		FileExtractOptions: o,
 		data:               make(map[string][]float64),
 		size:               0,
@@ -96,12 +96,12 @@ func NewFileExtracter(o *FileExtractOptions) *FileExtracter {
 }
 
 // get the the size of map data
-func (fe FileExtracter) Size() int {
+func (fe FileExtractor) Size() int {
 	return fe.size
 }
 
 // Read an ASCII file and extract data and save then to map data
-func (ext *FileExtracter) Read() {
+func (ext *FileExtractor) Read() {
 	fid, err := os.Open(ext.filename)
 	if err != nil {
 		log.Fatal(err)
@@ -123,10 +123,14 @@ func (ext *FileExtracter) Read() {
 		values := strings.Fields(str)
 		// fill map data
 		for key, column := range ext.varsList {
-			if v, err := strconv.ParseFloat(values[column], 64); err == nil {
-				ext.data[key] = append(ext.data[key], v)
+			if values[column] == "-1" {
+				ext.data[key] = append(ext.data[key], 1e36)
 			} else {
-				log.Fatalf("Bad format: %v.  Expected float number, may be skip line", err)
+				if v, err := strconv.ParseFloat(values[column], 64); err == nil {
+					ext.data[key] = append(ext.data[key], v)
+				} else {
+					log.Fatalf("Bad format: %v.  Expected float number, may be skip line", err)
+				}
 			}
 		}
 		ext.size += 1
@@ -134,12 +138,12 @@ func (ext *FileExtracter) Read() {
 }
 
 // get the the size of map data
-func (fe *FileExtracter) Data() map[string][]float64 {
+func (fe *FileExtractor) Data() map[string][]float64 {
 	return fe.data
 }
 
 // print the result
-func (ext FileExtracter) Print() {
+func (ext FileExtractor) Print() {
 	for key, _ := range ext.varsList {
 		fmt.Printf("%s: %7.3f\n", key, ext.data[key])
 	}

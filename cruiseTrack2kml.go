@@ -142,7 +142,7 @@ func main() {
 	// create KML header
 	k := gokml.NewKML(fmt.Sprintf("%s KML", config.Cruise))
 	f := gokml.NewFolder(fmt.Sprintf("%s cruise", config.Cruise),
-		"This is Cassiopee cruise folder in July-Aug 2015")
+		"This document was generated with cruiseTrack2kml program")
 	k.AddFeature(f)
 
 	// define new style for station icons
@@ -169,7 +169,7 @@ func main() {
 	p(opts)
 
 	// initialize fileExtractor from options
-	ext := fileExtractor.NewFileExtracter(opts)
+	ext := fileExtractor.NewFileExtractor(opts)
 
 	// read the file
 	ext.Read()
