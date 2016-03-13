@@ -9,6 +9,9 @@ import (
 	"strings"
 )
 
+// todos:
+// passer un fichier toml pour une config par defaut
+
 // FileExtractOptions contains configurable options for read an ASCII file.
 type FileExtractOptions struct {
 	filename string
