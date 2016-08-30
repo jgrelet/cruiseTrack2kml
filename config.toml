@@ -10,7 +10,9 @@ tsg_plots = "data/fr25/tsg/PIRATA-FR25_TSG_SCATTER.png"
 size_plots = 700
 
 tsg_skip = 2
-tsg_split = "LATITUDE,3,LONGITUDE,4"
+tsg_split = "LATITUDE,2,LONGITUDE,3"
+ctd_skip = 1
+ctd_split = "PRFL,1,BEGIN_DATE,2,BEGIN_TIME,3,END_DATE,4,END_TIME,5,LAT,6,LAT_S,7,LON,8,LON_S,9,TYPE_CAST,-1,PMAX,10,BOTTOM_DEPTH,11"
 
 [windows]
 tsg_file = "data/fr25/pirata-fr25.gps"
