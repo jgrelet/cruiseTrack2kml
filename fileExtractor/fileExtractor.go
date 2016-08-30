@@ -53,7 +53,7 @@ func (o *FileExtractOptions) SetVarsList(split string) *FileExtractOptions {
 	fields := strings.Split(split, ",")
 	for i := 0; i < len(fields); i += 2 {
 		if v, err := strconv.Atoi(fields[i+1]); err == nil {
-			o.varsList[fields[i]] = v - 1
+			o.varsList[fields[i]] = v
 			o.hdr = append(o.hdr, fields[i])
 		} else {
 			log.Fatalf("Check the input of SetVars: %v\n", err)
@@ -75,7 +75,7 @@ func (o *FileExtractOptions) SetSkipLine(line int) *FileExtractOptions {
 
 // display FileExtractOptions object
 func (o FileExtractOptions) String() string {
-	return fmt.Sprintf("File: %s\nFields:%s\nVars: %v SkipLine: %d\n",
+	return fmt.Sprintf("File: %s\nFields:%s\nVars: %v\nSkipLine: %d\n",
 		o.filename, o.hdr, o.varsList, o.skipLine)
 }
 
@@ -124,7 +124,8 @@ func (ext *FileExtracter) Read() {
 		// fill map data
 		for key, column := range ext.varsList {
 			if v, err := strconv.ParseFloat(values[column], 64); err == nil {
-				ext.data[key] = append(ext.data[key], v)
+				// column start at zero
+				ext.data[key] = append(ext.data[key], v-1)
 			} else {
 				log.Fatalf("Bad format: %v.  Expected float number, may be skip line", err)
 			}
