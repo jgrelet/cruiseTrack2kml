@@ -1,0 +1,27 @@
+# this is a configuration file for cruiseTrack2kml program
+
+cruise = "PIRATA-FR26"
+ship = "THALASSA"
+
+[files]
+
+  # You can indent as you please. Tabs or spaces. TOML don't care.
+  [files.ctd]
+  fileName = "../ascii/pirata-fr26.ctd"
+  skipLine = 2
+  varList = "PRFL,1,BEGIN_DATE,2,BEGIN_TIME,3,END_DATE,4,END_TIME,5,LAT,6,LAT_S,7,LON,8,LON_S,9,TYPE_CAST,-1,PMAX,10,BOTTOM_DEPTH,11"
+  plotNames = "http://www.brest.ird.fr/us191/cruises/pirata-fr26/dfr26%s.jpg"
+  plotSize = 700
+  prefix = 3
+ 
+  [files.tsg]
+  fileName = "./data/fr26/ascii/pirata-fr26.gps"
+  skipLine = 2
+  varList = "LATITUDE,2,LONGITUDE,3"
+  plotNames = "http://www.brest.ird.fr/us191/cruises/pirata-fr26/PIRATA-FR26_TSG_SCATTER.png"
+  plotSize = 700
+
+
+[kml]
+kml_file = "pirata-fr26.kml"
+
