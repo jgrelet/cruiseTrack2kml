@@ -40,7 +40,4 @@ func main() {
 		lon := lons[i]
 		pf("%f\t%f\n", lat, lon)
 	}
-	// display result for test
-	//ext.Print()
-
 }
