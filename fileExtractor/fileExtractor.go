@@ -123,20 +123,9 @@ func (ext *FileExtractor) Read() {
 		values := strings.Fields(str)
 		// fill map data
 		for key, column := range ext.varsList {
-<<<<<<< HEAD
 			if v, err := strconv.ParseFloat(values[column], 64); err == nil {
 				// column start at zero
 				ext.data[key] = append(ext.data[key], v-1)
-=======
-			if values[column] == "-1" {
-				ext.data[key] = append(ext.data[key], 1e36)
->>>>>>> e001682e4b5a74645d850689d72a7697e52dd11d
-			} else {
-				if v, err := strconv.ParseFloat(values[column], 64); err == nil {
-					ext.data[key] = append(ext.data[key], v)
-				} else {
-					log.Fatalf("Bad format: %v.  Expected float number, may be skip line", err)
-				}
 			}
 		}
 		ext.size += 1

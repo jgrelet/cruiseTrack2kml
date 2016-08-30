@@ -56,8 +56,14 @@ func TestFile(t *testing.T) {
 	_, err := toml.DecodeFile("config.toml", &config)
 	assert.Nil(err)
 	assert.Equal(config.Cruise, "PIRATA-FR26")
-	p(config.Files)
+	// p(config.Files)
 	for instrument, file := range config.Files {
-		pf("Instrument: %s (%s, %s)\n", instrument, file.FileName, file.VarList)
+		// pf("Instrument: %s (%s, %s)\n", instrument, file.FileName, file.VarList)
+		switch instrument {
+		case "ctd":
+			assert.Equal(file.FileName, "../ascii/pirata-fr26.ctd")
+		case "tsg":
+			assert.Equal(file.FileName, "./data/fr26/ascii/pirata-fr26.gps")
+		}
 	}
 }
