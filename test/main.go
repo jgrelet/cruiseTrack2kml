@@ -27,7 +27,7 @@ func main() {
 	p(opts)
 
 	// initialize fileExtractor from options
-	ext := fileExtractor.NewFileExtracter(opts)
+	ext := fileExtractor.NewFileExtractor(opts)
 
 	// read the file
 	ext.Read()

@@ -101,10 +101,10 @@ func (fe FileExtractor) Size() int {
 }
 
 // Read an ASCII file and extract data and save then to map data
-func (ext *FileExtractor) Read() {
+func (ext *FileExtractor) Read() error {
 	fid, err := os.Open(ext.filename)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer fid.Close()
 
@@ -121,15 +121,26 @@ func (ext *FileExtractor) Read() {
 		// parse each line to string
 		str := scanner.Text()
 		values := strings.Fields(str)
+
 		// fill map data
 		for key, column := range ext.varsList {
-			if v, err := strconv.ParseFloat(values[column], 64); err == nil {
-				// column start at zero
-				ext.data[key] = append(ext.data[key], v-1)
+			if column < len(values) {
+				//p(str)
+				pf("Key: %s, column: %d len(values):%d\n", key, column, len(values))
+
+				if v, err := strconv.ParseFloat(values[column-1], 64); err == nil {
+					// column start at zero
+					ext.data[key] = append(ext.data[key], v)
+				}
+			} else {
+				continue
 			}
 		}
+
 		ext.size += 1
+
 	}
+	return nil
 }
 
 // get the the size of map data
