@@ -38,19 +38,15 @@ type file struct {
 	FileName  string `toml:"fileName"`
 	VarList   string `toml:"varList"`
 	Separator string `toml:"separator"`
-	PlotNames string `toml:"plotNames"`
-	Prefix    int    `toml:"prefix"`
-	PlotSize  int    `toml:"plotSize"`
+	PlotNames string `toml:"plotNames,omitempty"`
+	Prefix    int    `toml:"prefix,omitempty"`
+	PlotSize  int    `toml:"plotSize,omitempty"`
 	SkipLine  int    `toml:"skipLine"`
 }
 
 type kml struct {
 	FileName string `toml:"filename"`
 }
-
-// usefull macro
-var p = fmt.Println
-var pf = fmt.Printf
 
 func printTypes(md toml.MetaData) {
 	tabw := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)

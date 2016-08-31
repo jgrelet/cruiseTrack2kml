@@ -9,8 +9,9 @@ import (
 	"strings"
 )
 
-// todos:
-// passer un fichier toml pour une config par defaut
+// usefull macro
+var p = fmt.Println
+var pf = fmt.Printf
 
 // FileExtractOptions contains configurable options for read an ASCII file.
 type FileExtractOptions struct {
@@ -129,7 +130,7 @@ func (ext *FileExtractor) Read() error {
 		for key, column := range ext.varsList {
 			if column < len(values) {
 				//p(str)
-				pf("Key: %s, column: %d len(values):%d\n", key, column, len(values))
+				//pf("Key: %s, column: %d len(values):%d\n", key, column, len(values))
 
 				if v, err := strconv.ParseFloat(values[column-1], 64); err == nil {
 					// column start at zero
