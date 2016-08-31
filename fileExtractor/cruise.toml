@@ -1,0 +1,46 @@
+# this is a configuration file for cruiseTrack2kml program
+
+cruise      = "PIRATA-FR26"
+ship        = "THALASSA"
+callsign    = "FNFP"
+begin_date  = 2016-03-08T08:00:00Z
+end_date    = 2016-04-14T07:00:00Z
+#begin_date  = "08/03/2016"
+#end_date    = "14/04/2016"
+institute      = "IRD"
+pi             = "BOURLES"
+creator        = "Jacques.Grelet_at_ird.fr"
+
+
+[files]
+
+  # You can indent as you please. Tabs or spaces. TOML don't care.
+  [files.ctd]
+  filename = "M:/PIRATA-FR26/data-processing/CTD/data/cnv/dfr26001.cnv"
+  skipline = 354
+  varlist = "PRES,3,DEPTH,4,ETDD,2,TEMP,5,PSAL,17,DENS,20,SVEL,22,DOX2,15,FLU2,13,TUR3,14,NAVG,23"
+  prefix = 3
+  separator = ' '
+ 
+  [files.btl]
+  filename = "M:/PIRATA-FR26/data-processing/CTD/data/btl/fr26001.btl"
+  skipline = 259
+  varlist = "BOTL,1,month,2,day,3,year,4,PSA1,5,PSA2,6,DO11,7,DO21,8,DO12,9,DO22,10,Potemp090C,11,Potemp190C,12,ETDD,13,PRES,14,DEPTH,15,TE01,16,TE02,17,CND1,18,CND2,19,DOV1,20,DOV2,21,DVT1,22,DVT2,23,FLU2,24"
+  separator = ' '
+
+
+  [files.tsg]
+  filename = "M:/PIRATA-FR26/data-processing/THERMO/data/*.COLCOR"
+  skipline = 2
+  varlist = "BOTL,1,month,2,day,3,year,4,PSA1,5,PSA2,6,DO11,7,DO21,8,DO12,9,DO22,10,Potemp090C,11,Potemp190C,12,ETDD,13,PRES,14,DEPTH,15,TE01,16,TE02,17,CND1,18,CND2,19,DOV1,20,DOV2,21,DVT1,22,DVT2,23,FLU2,24"
+  separator = ','
+
+  [files.xbt]
+  filename = "M:/PIRATA-FR26/data-processing/CELERITE/data/*.EDF"
+  skipline = 41
+  varlist = "DEPTH,1,TEMP,2,SVEL,3"
+  separator = ' '
+
+[kml]
+filename = "pirata-fr26.kml"
+
