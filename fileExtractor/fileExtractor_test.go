@@ -14,6 +14,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TODOS:
+// - read multiples lines
+// - define type for variables, default float64
+
 var (
 	debug = true
 	// configFile string = "config.toml"
@@ -105,7 +109,7 @@ func TestFile(t *testing.T) {
 		// pf("Instrument: %s (%s, %s)\n", instrument, file.FileName, file.VarList)
 		switch instrument {
 		case "ctd":
-			assert.Equal(file.FileName, "M:/PIRATA-FR26/data-processing/CTD/data/cnv/dfr26001.cnv")
+			assert.Equal(file.FileName, "test/CTD/dfr26001.cnv")
 			opts.SetFilename(file.FileName)
 			opts.SetVarsList(file.VarList)
 			opts.SetSkipLine(file.SkipLine)
@@ -126,7 +130,7 @@ func TestFile(t *testing.T) {
 			assert.Equal(psal[size], 34.9640)
 
 		case "btl":
-			assert.Equal(file.FileName, "M:/PIRATA-FR26/data-processing/CTD/data/btl/fr26001.btl")
+			assert.Equal(file.FileName, "test/CTD/fr26001.btl")
 			opts.SetFilename(file.FileName)
 			opts.SetVarsList(file.VarList)
 			opts.SetSkipLine(file.SkipLine)
@@ -137,8 +141,8 @@ func TestFile(t *testing.T) {
 			}
 			size := ext.Size() - 1
 			btl := ext.Data()["BOTL"]
-			assert.Equal(btl[0], 1)     // test the first pressure value
-			assert.Equal(btl[size], 11) // test the last pressure value
+			assert.Equal(btl[0], 1.0)     // test the first pressure value
+			assert.Equal(btl[size], 11.0) // test the last pressure value
 			temp := ext.Data()["TE01"]
 			assert.Equal(temp[0], 3.5048)
 			assert.Equal(temp[size], 3.5048)
@@ -146,9 +150,9 @@ func TestFile(t *testing.T) {
 			assert.Equal(psal[0], 34.9636)
 			assert.Equal(psal[size], 34.9637)
 		case "tsg":
-			assert.Equal(file.FileName, "M:/PIRATA-FR26/data-processing/THERMO/data/*.COLCOR")
+			assert.Equal(file.FileName, "test/TSG/20160308-085453-TS_COLCOR.COLCOR")
 		case "xbt":
-			assert.Equal(file.FileName, "M:/PIRATA-FR26/data-processing/CELERITE/data/*.EDF")
+			assert.Equal(file.FileName, "test/XBT/T7_00001.EDF")
 		}
 	}
 	assert.Equal(config.Kml.FileName, "pirata-fr26.kml")

@@ -16,7 +16,7 @@ creator        = "Jacques.Grelet_at_ird.fr"
 
   # You can indent as you please. Tabs or spaces. TOML don't care.
   [files.ctd]
-  filename = "../ascii/pirata-fr26.ctd"
+  filename = "test/CTD/pirata-fr26.ctd"
   skipline = 2
   varlist = "PRFL,1,BEGIN_DATE,2,BEGIN_TIME,3,END_DATE,4,END_TIME,5,LAT,6,LAT_S,7,LON,8,LON_S,9,TYPE_CAST,-1,PMAX,10,BOTTOM_DEPTH,11"
   plotnames = "http://www.brest.ird.fr/us191/cruises/pirata-fr26/dfr26%s.jpg"
@@ -24,7 +24,7 @@ creator        = "Jacques.Grelet_at_ird.fr"
   prefix = 3
  
   [files.tsg]
-  filename = "./data/fr26/ascii/pirata-fr26.gps"
+  filename = "test/TSG/pirata-fr26.gps"
   skipline = 2
   varlist = "LATITUDE,2,LONGITUDE,3"
   plotNames = "http://www.brest.ird.fr/us191/cruises/pirata-fr26/PIRATA-FR26_TSG_SCATTER.png"

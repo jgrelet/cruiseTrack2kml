@@ -15,10 +15,11 @@ var pf = fmt.Printf
 
 // FileExtractOptions contains configurable options for read an ASCII file.
 type FileExtractOptions struct {
-	filename string
-	hdr      []string
-	varsList map[string]int
-	skipLine int // number of line to skip before read data
+	filename  string
+	hdr       []string
+	varsList  map[string]int
+	separator string
+	skipLine  int // number of line to skip before read data
 }
 
 // FileExtractor contains FileExtractOptions object and map data extracted from ASCII file.
@@ -32,10 +33,11 @@ type FileExtractor struct {
 // empty default values.
 func NewFileExtractOptions() *FileExtractOptions {
 	o := &FileExtractOptions{
-		filename: "",
-		hdr:      []string{},
-		varsList: map[string]int{},
-		skipLine: 0,
+		filename:  "",
+		hdr:       []string{},
+		varsList:  map[string]int{},
+		separator: "",
+		skipLine:  0,
 	}
 	return o
 }
@@ -66,9 +68,15 @@ func (o *FileExtractOptions) SetVarsList(split string) *FileExtractOptions {
 	return o
 }
 
-// Filename will get the ASCII file name (getter)
+// VarsList getter
 func (o *FileExtractOptions) VarsList() map[string]int {
 	return o.varsList
+}
+
+// SetSeparator will override the default separator (space)
+func (o *FileExtractOptions) SetSeparator(sep string) *FileExtractOptions {
+	o.separator = sep
+	return o
 }
 
 // SetSkipLine will set to skip header line
@@ -122,9 +130,18 @@ func (ext *FileExtractor) Read() error {
 
 	// read file
 	for scanner.Scan() {
+		var values []string
+
 		// parse each line to string
 		str := scanner.Text()
-		values := strings.Fields(str)
+
+		// split the string str with defined separator
+		if ext.separator != "" {
+			values = strings.Split(str, ext.separator)
+		} else {
+			// split the string str with one or more space
+			values = strings.Fields(str)
+		}
 
 		// fill map data
 		for key, column := range ext.varsList {
