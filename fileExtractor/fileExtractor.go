@@ -11,7 +11,7 @@ import (
 
 // usefull macro
 var p = fmt.Println
-var pf = fmt.Printf
+var pf = fmt.Fprintf
 
 // FileExtractOptions contains configurable options for read an ASCII file.
 type FileExtractOptions struct {
@@ -55,16 +55,23 @@ func (o *FileExtractOptions) Filename() string {
 
 // SetVars will set the parameters and their columns to extract from file
 func (o *FileExtractOptions) SetVarsList(split string) *FileExtractOptions {
+	// create empty map and header list
+	m := map[string]int{}
+	h := []string{}
+
 	// construct map from split
 	fields := strings.Split(split, ",")
 	for i := 0; i < len(fields); i += 2 {
 		if v, err := strconv.Atoi(fields[i+1]); err == nil {
-			o.varsList[fields[i]] = v
-			o.hdr = append(o.hdr, fields[i])
+			m[fields[i]] = v
+			h = append(h, fields[i])
 		} else {
 			log.Fatalf("Check the input of SetVars: %v\n", err)
 		}
 	}
+	// copy map and header list to FileExtractOptions object
+	o.varsList = m
+	o.hdr = h
 	return o
 }
 
@@ -138,6 +145,7 @@ func (ext *FileExtractor) Read() error {
 		// split the string str with defined separator
 		if ext.separator != "" {
 			values = strings.Split(str, ext.separator)
+			p(values)
 		} else {
 			// split the string str with one or more space
 			values = strings.Fields(str)
@@ -145,11 +153,10 @@ func (ext *FileExtractor) Read() error {
 
 		// fill map data
 		for key, column := range ext.varsList {
-			if column < len(values) {
-				//p(str)
-				//pf("Key: %s, column: %d len(values):%d\n", key, column, len(values))
-
-				if v, err := strconv.ParseFloat(values[column-1], 64); err == nil {
+			// slice index start at 0
+			ind := column - 1
+			if ind < len(values) {
+				if v, err := strconv.ParseFloat(values[ind], 64); err == nil {
 					// column start at zero
 					ext.data[key] = append(ext.data[key], v)
 				}
@@ -170,9 +177,11 @@ func (fe *FileExtractor) Data() map[string][]float64 {
 }
 
 // print the result
-func (ext FileExtractor) Print() {
+func (ext FileExtractor) String() string {
+	var s string = "\n"
 	for key, _ := range ext.varsList {
-		fmt.Printf("%s: %7.3f\n", key, ext.data[key])
+		s = s + fmt.Sprintf("%s: %7.3f\n", key, ext.data[key])
 	}
-	fmt.Println()
+	s = s + "\n"
+	return s
 }

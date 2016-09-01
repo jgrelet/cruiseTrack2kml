@@ -3,6 +3,8 @@ package fileExtractor
 
 import (
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -19,10 +21,12 @@ import (
 // - define type for variables, default float64
 
 var (
-	debug = true
 	// configFile string = "config.toml"
 	configFile string = "cruise.toml"
 )
+
+// use for debug mode
+var debug io.Writer = ioutil.Discard
 
 type tomlConfig struct {
 	CycleMesure string    `toml:"cruise"`
@@ -52,8 +56,14 @@ type kml struct {
 	FileName string `toml:"filename"`
 }
 
+func init() {
+	debug = os.Stdout
+	// comment for debug
+	//debug = ioutil.Discard
+}
+
 func printTypes(md toml.MetaData) {
-	tabw := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	tabw := tabwriter.NewWriter(debug, 0, 0, 2, ' ', 0)
 	for _, key := range md.Keys() {
 		fmt.Fprintf(tabw, "%s%s\t%s\n",
 			strings.Repeat("    ", len(key)-1), key, md.Type(key...))
@@ -61,17 +71,20 @@ func printTypes(md toml.MetaData) {
 	tabw.Flush()
 }
 
-func TestFile(t *testing.T) {
-
-	// test default empty configuration object
-	opts := NewFileExtractOptions()
+// test default empty FileExtractor object
+func TestEmptyFileExtractor(t *testing.T) {
 	assert := assert.New(t)
+	opts := NewFileExtractOptions()
 	assert.Empty(opts.Filename())
 	assert.Empty(opts.VarsList())
 	assert.Empty(opts.hdr)
 	assert.Equal(opts.skipLine, 0)
+}
 
-	// fill and test the object
+// fill and test a valid FileExtractor object
+func TestValidFileExtractor(t *testing.T) {
+	assert := assert.New(t)
+	opts := NewFileExtractOptions()
 	opts.SetFilename("pirata-fr23_tsg")
 	assert.Equal(opts.Filename(), "pirata-fr23_tsg")
 	opts.SetVarsList("LATITUDE,3,LONGITUDE,4")
@@ -80,13 +93,17 @@ func TestFile(t *testing.T) {
 	assert.Len(opts.hdr, 2)
 	opts.SetSkipLine(2)
 	assert.Equal(opts.skipLine, 2)
+}
 
-	// read and test default config.toml file
+// read and test valid FileExtractor object from config.toml file
+func TestFileExtractorFromConfigFile(t *testing.T) {
 	var config tomlConfig
-	md, err := toml.DecodeFile(configFile, &config)
+	assert := assert.New(t)
+	_, err := toml.DecodeFile(configFile, &config)
 	if err != nil {
-		log.Fatalf("Read config.toml: %s", err)
+		log.Fatalf("Read %s: %s", configFile, err)
 	}
+	opts := NewFileExtractOptions()
 	assert.Equal(config.CycleMesure, "PIRATA-FR26")
 	assert.Equal(config.Plateforme, "THALASSA")
 	assert.Equal(config.CallSign, "FNFP")
@@ -99,14 +116,12 @@ func TestFile(t *testing.T) {
 	assert.Equal(config.Creator, "Jacques.Grelet_at_ird.fr")
 
 	// display informations only for debugging
-	if debug {
-		printTypes(md)
-		p(config)
-	}
+	// printTypes(md)
+	//p(debug, config)
 
 	// loop over files
 	for instrument, file := range config.Files {
-		// pf("Instrument: %s (%s, %s)\n", instrument, file.FileName, file.VarList)
+		pf(debug, "Instrument: %s (%s, %s)\n", instrument, file.FileName, file.VarList)
 		switch instrument {
 		case "ctd":
 			assert.Equal(file.FileName, "test/CTD/dfr26001.cnv")
@@ -118,19 +133,55 @@ func TestFile(t *testing.T) {
 			if err != nil {
 				log.Fatalf("NewFileExtractor(opts).Read() for %s: %s", instrument, err)
 			}
+			p(debug, ext)
 			size := ext.Size() - 1
 			pres := ext.Data()["PRES"]
-			assert.Equal(pres[0], 2.0)       // test the first pressure value
-			assert.Equal(pres[size], 2023.0) // test the last pressure value
+			assert.Equal(2.0, pres[0])    // test the first pressure value
+			assert.Equal(7.0, pres[size]) // test the last pressure value
 			temp := ext.Data()["TEMP"]
-			assert.Equal(temp[0], 24.7241)
-			assert.Equal(temp[size], 3.5041)
+			assert.Equal(24.7241, temp[0])
+			assert.Equal(24.7260, temp[size])
 			psal := ext.Data()["PSAL"]
-			assert.Equal(psal[0], 35.7711)
-			assert.Equal(psal[size], 34.9640)
+			assert.Equal(35.7711, psal[0])
+			assert.Equal(35.7716, psal[size])
 
 		case "btl":
 			assert.Equal(file.FileName, "test/CTD/fr26001.btl")
+			opts.SetFilename(file.FileName)
+			opts.SetVarsList(file.VarList)
+			opts.SetSkipLine(file.SkipLine)
+			/*
+				ext := NewFileExtractor(opts)
+					err = ext.Read()
+					if err != nil {
+						log.Fatalf("NewFileExtractor(opts).Read() for %s: %s", instrument, err)
+					}
+					size := ext.Size() - 1
+					btl := ext.Data()["BOTL"]
+					assert.Equal(btl[0], 1.0)     // test the first pressure value
+					assert.Equal(btl[size], 11.0) // test the last pressure value
+					temp := ext.Data()["TE01"]
+					assert.Equal(temp[0], 3.5048)
+					assert.Equal(temp[size], 3.5048)
+					psal := ext.Data()["PSA1"]
+					assert.Equal(psal[0], 34.9636)
+					assert.Equal(psal[size], 34.9637)
+					p(debug, ext)
+			*/
+		case "tsg":
+			assert.Equal(file.FileName, "test/TSG/20160308-085453-TS_COLCOR.COLCOR")
+			opts.SetFilename(file.FileName)
+			opts.SetVarsList(file.VarList)
+			opts.SetSkipLine(file.SkipLine)
+			opts.SetSeparator(file.Separator)
+			ext := NewFileExtractor(opts)
+			err = ext.Read()
+			if err != nil {
+				log.Fatalf("NewFileExtractor(opts).Read() for %s: %s", instrument, err)
+			}
+			p(debug, ext)
+		case "xbt":
+			assert.Equal(file.FileName, "test/XBT/T7_00001.EDF")
 			opts.SetFilename(file.FileName)
 			opts.SetVarsList(file.VarList)
 			opts.SetSkipLine(file.SkipLine)
@@ -139,20 +190,17 @@ func TestFile(t *testing.T) {
 			if err != nil {
 				log.Fatalf("NewFileExtractor(opts).Read() for %s: %s", instrument, err)
 			}
+			p(debug, ext)
 			size := ext.Size() - 1
-			btl := ext.Data()["BOTL"]
-			assert.Equal(btl[0], 1.0)     // test the first pressure value
-			assert.Equal(btl[size], 11.0) // test the last pressure value
-			temp := ext.Data()["TE01"]
-			assert.Equal(temp[0], 3.5048)
-			assert.Equal(temp[size], 3.5048)
-			psal := ext.Data()["PSA1"]
-			assert.Equal(psal[0], 34.9636)
-			assert.Equal(psal[size], 34.9637)
-		case "tsg":
-			assert.Equal(file.FileName, "test/TSG/20160308-085453-TS_COLCOR.COLCOR")
-		case "xbt":
-			assert.Equal(file.FileName, "test/XBT/T7_00001.EDF")
+			pres := ext.Data()["DEPTH"]
+			assert.Equal(0.0, pres[0])    // test the first pressure value
+			assert.Equal(5.8, pres[size]) // test the last pressure value
+			temp := ext.Data()["TEMP"]
+			assert.Equal(23.32, temp[0])
+			assert.Equal(23.23, temp[size])
+			svel := ext.Data()["SVEL"]
+			assert.Equal(1530.25, svel[0])
+			assert.Equal(1530.10, svel[size])
 		}
 	}
 	assert.Equal(config.Kml.FileName, "pirata-fr26.kml")

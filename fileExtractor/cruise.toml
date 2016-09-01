@@ -20,26 +20,22 @@ creator        = "Jacques.Grelet_at_ird.fr"
   skipline = 354
   varlist = "PRES,3,DEPTH,4,ETDD,2,TEMP,5,PSAL,17,DENS,20,SVEL,22,DOX2,15,FLU2,13,TUR3,14,NAVG,23"
   prefix = 3
-  separator = ' '
  
   [files.btl]
   filename = "test/CTD/fr26001.btl"
   skipline = 259
   varlist = "BOTL,1,month,2,day,3,year,4,PSA1,5,PSA2,6,DO11,7,DO21,8,DO12,9,DO22,10,Potemp090C,11,Potemp190C,12,ETDD,13,PRES,14,DEPTH,15,TE01,16,TE02,17,CND1,18,CND2,19,DOV1,20,DOV2,21,DVT1,22,DVT2,23,FLU2,24"
-  separator = ' '
-
 
   [files.tsg]
-  filename = "test/TSG/*.COLCOR"
-  skipline = 2
-  varlist = "BOTL,1,month,2,day,3,year,4,PSA1,5,PSA2,6,DO11,7,DO21,8,DO12,9,DO22,10,Potemp090C,11,Potemp190C,12,ETDD,13,PRES,14,DEPTH,15,TE01,16,TE02,17,CND1,18,CND2,19,DOV1,20,DOV2,21,DVT1,22,DVT2,23,FLU2,24"
+  filename = "test/TSG/20160308-085453-TS_COLCOR.COLCOR"
+  skipline = 6
+  varlist = "DATE,3,TIME,4,LATS,5,LATITUDE,6,LONS,7,LONGITUDE,8,SSTP,17,SSJT,18,COND,19,SSPS,20"
   separator = ','
 
   [files.xbt]
-  filename = "test/XBT/*.EDF"
+  filename = "test/XBT/T7_00001.EDF"
   skipline = 41
   varlist = "DEPTH,1,TEMP,2,SVEL,3"
-  separator = ' '
 
 [kml]
 filename = "pirata-fr26.kml"
