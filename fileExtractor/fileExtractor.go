@@ -3,6 +3,8 @@ package fileExtractor
 import (
 	"bufio"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
@@ -11,7 +13,10 @@ import (
 
 // usefull macro
 var p = fmt.Println
-var pf = fmt.Fprintf
+
+// use for debug mode
+var debugMode = false
+var debug io.Writer = ioutil.Discard
 
 // FileExtractOptions contains configurable options for read an ASCII file.
 type FileExtractOptions struct {
@@ -101,6 +106,9 @@ func (o FileExtractOptions) String() string {
 // NewFileExtracter will create a new FileExtractor type with some values from
 // configuration (not implemented)
 func NewFileExtractor(o *FileExtractOptions) *FileExtractor {
+	if debugMode {
+		debug = os.Stdout
+	}
 	// in this constructor, we use composition (or embedding) vs inheritance
 	fe := &FileExtractor{
 		FileExtractOptions: o,
@@ -145,7 +153,6 @@ func (ext *FileExtractor) Read() error {
 		// split the string str with defined separator
 		if ext.separator != "" {
 			values = strings.Split(str, ext.separator)
-			p(values)
 		} else {
 			// split the string str with one or more space
 			values = strings.Fields(str)
@@ -155,6 +162,7 @@ func (ext *FileExtractor) Read() error {
 		for key, column := range ext.varsList {
 			// slice index start at 0
 			ind := column - 1
+
 			if ind < len(values) {
 				if v, err := strconv.ParseFloat(values[ind], 64); err == nil {
 					// column start at zero
@@ -178,10 +186,9 @@ func (fe *FileExtractor) Data() map[string][]float64 {
 
 // print the result
 func (ext FileExtractor) String() string {
-	var s string = "\n"
+	var s []string
 	for key, _ := range ext.varsList {
-		s = s + fmt.Sprintf("%s: %7.3f\n", key, ext.data[key])
+		s = append(s, fmt.Sprintf("\n%s: %7.3f", key, ext.data[key]))
 	}
-	s = s + "\n"
-	return s
+	return strings.Join(s, "")
 }

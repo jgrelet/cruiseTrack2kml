@@ -3,13 +3,8 @@ package fileExtractor
 
 import (
 	"fmt"
-	"io"
-	"io/ioutil"
 	"log"
-	"os"
-	"strings"
 	"testing"
-	"text/tabwriter"
 	"time"
 
 	"github.com/BurntSushi/toml"
@@ -24,9 +19,6 @@ var (
 	// configFile string = "config.toml"
 	configFile string = "cruise.toml"
 )
-
-// use for debug mode
-var debug io.Writer = ioutil.Discard
 
 type tomlConfig struct {
 	CycleMesure string    `toml:"cruise"`
@@ -54,21 +46,6 @@ type file struct {
 
 type kml struct {
 	FileName string `toml:"filename"`
-}
-
-func init() {
-	debug = os.Stdout
-	// comment for debug
-	//debug = ioutil.Discard
-}
-
-func printTypes(md toml.MetaData) {
-	tabw := tabwriter.NewWriter(debug, 0, 0, 2, ' ', 0)
-	for _, key := range md.Keys() {
-		fmt.Fprintf(tabw, "%s%s\t%s\n",
-			strings.Repeat("    ", len(key)-1), key, md.Type(key...))
-	}
-	tabw.Flush()
 }
 
 // test default empty FileExtractor object
@@ -103,7 +80,6 @@ func TestFileExtractorFromConfigFile(t *testing.T) {
 	if err != nil {
 		log.Fatalf("Read %s: %s", configFile, err)
 	}
-	opts := NewFileExtractOptions()
 	assert.Equal(config.CycleMesure, "PIRATA-FR26")
 	assert.Equal(config.Plateforme, "THALASSA")
 	assert.Equal(config.CallSign, "FNFP")
@@ -116,15 +92,15 @@ func TestFileExtractorFromConfigFile(t *testing.T) {
 	assert.Equal(config.Creator, "Jacques.Grelet_at_ird.fr")
 
 	// display informations only for debugging
-	// printTypes(md)
-	//p(debug, config)
+	//fmt.Println(debug, config)
 
 	// loop over files
 	for instrument, file := range config.Files {
-		pf(debug, "Instrument: %s (%s, %s)\n", instrument, file.FileName, file.VarList)
+		fmt.Fprintf(debug, "Instrument: %s (%s, %s)\n", instrument, file.FileName, file.VarList)
 		switch instrument {
 		case "ctd":
 			assert.Equal(file.FileName, "test/CTD/dfr26001.cnv")
+			opts := NewFileExtractOptions()
 			opts.SetFilename(file.FileName)
 			opts.SetVarsList(file.VarList)
 			opts.SetSkipLine(file.SkipLine)
@@ -133,7 +109,7 @@ func TestFileExtractorFromConfigFile(t *testing.T) {
 			if err != nil {
 				log.Fatalf("NewFileExtractor(opts).Read() for %s: %s", instrument, err)
 			}
-			p(debug, ext)
+			//fmt.Println(ext)
 			size := ext.Size() - 1
 			pres := ext.Data()["PRES"]
 			assert.Equal(2.0, pres[0])    // test the first pressure value
@@ -147,6 +123,7 @@ func TestFileExtractorFromConfigFile(t *testing.T) {
 
 		case "btl":
 			assert.Equal(file.FileName, "test/CTD/fr26001.btl")
+			opts := NewFileExtractOptions()
 			opts.SetFilename(file.FileName)
 			opts.SetVarsList(file.VarList)
 			opts.SetSkipLine(file.SkipLine)
@@ -166,10 +143,11 @@ func TestFileExtractorFromConfigFile(t *testing.T) {
 					psal := ext.Data()["PSA1"]
 					assert.Equal(psal[0], 34.9636)
 					assert.Equal(psal[size], 34.9637)
-					p(debug, ext)
+					fmt.Fprintf(debug, ext)
 			*/
 		case "tsg":
 			assert.Equal(file.FileName, "test/TSG/20160308-085453-TS_COLCOR.COLCOR")
+			opts := NewFileExtractOptions()
 			opts.SetFilename(file.FileName)
 			opts.SetVarsList(file.VarList)
 			opts.SetSkipLine(file.SkipLine)
@@ -179,9 +157,11 @@ func TestFileExtractorFromConfigFile(t *testing.T) {
 			if err != nil {
 				log.Fatalf("NewFileExtractor(opts).Read() for %s: %s", instrument, err)
 			}
-			p(debug, ext)
+			//fmt.Println(ext)
+
 		case "xbt":
 			assert.Equal(file.FileName, "test/XBT/T7_00001.EDF")
+			opts := NewFileExtractOptions()
 			opts.SetFilename(file.FileName)
 			opts.SetVarsList(file.VarList)
 			opts.SetSkipLine(file.SkipLine)
@@ -190,7 +170,7 @@ func TestFileExtractorFromConfigFile(t *testing.T) {
 			if err != nil {
 				log.Fatalf("NewFileExtractor(opts).Read() for %s: %s", instrument, err)
 			}
-			p(debug, ext)
+			//fmt.Println(ext)
 			size := ext.Size() - 1
 			pres := ext.Data()["DEPTH"]
 			assert.Equal(0.0, pres[0])    // test the first pressure value
