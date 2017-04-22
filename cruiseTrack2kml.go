@@ -14,10 +14,11 @@ import (
 	"strings"
 	"time"
 
+	"flag"
+
 	"github.com/BurntSushi/toml"
 	"github.com/gershwinlabs/gokml"
 	"github.com/jgrelet/cruiseTrack2kml/fileExtractor"
-	flag "github.com/tcnksm/mflag"
 )
 
 // arg var
@@ -28,7 +29,7 @@ var (
 	kmlFile string
 )
 
-const version string = "cruiseTrack2kml, version 0.2  J.Grelet IRD - US191 IMAGO"
+const version string = "cruiseTrack2kml, version 0.21  J.Grelet IRD - US191 IMAGO"
 
 // toml config structure
 type tomlConfig struct {
@@ -65,9 +66,9 @@ func init() {
 	//	 cruise string
 	)
 
-	help = flag.Bool([]string{"h", "#a", "-help", "#aide", "#-aide"}, false, "display the help")
+	help = flag.Bool("help", false, "display the help...")
 	//	flag.StringVar(&cruise, []string{"cruise"}, "", "cruise name")
-	flag.StringVar(&configFile, []string{"c", "config"}, "", "use alternate .toml config file")
+	flag.StringVar(&configFile, "config", "", "use alternate .toml config file")
 	flag.Parse()
 	if *help {
 		flag.PrintDefaults()

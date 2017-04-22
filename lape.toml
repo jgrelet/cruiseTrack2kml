@@ -1,0 +1,27 @@
+# this is a configuration file for cruiseTrack2kml program
+
+cruise = "LAPEROUSE"
+ship = "ANTEA"
+
+#ctd_plots = "http://192.168.81.145/ctd-plots/downcast/dlape%s.jpg"
+ctd_plots = "http://192.168.81.145/lape-ctd/dlape%s.jpg"
+ctd_prefix = 2
+tsg_plots = "http://192.168.81.145/tsg-plots/LAPEROUSE_TSG_SCATTER.png"
+
+size_plots = 700
+station_number = true
+tsg_skip = 2
+tsg_split = "LATITUDE,2,LONGITUDE,3"
+ctd_skip = 1
+ctd_split = "PRFL,1,BEGIN_DATE,2,BEGIN_TIME,3,END_DATE,4,END_TIME,5,LAT,6,LAT_S,7,LON,8,LON_S,9,TYPE_CAST,-1,PMAX,10,BOTTOM_DEPTH,11"
+
+[windows]
+tsg_file = "M:/LAPEROUSE/data-processing/COLCOR/ascii/laperouse.gps"
+ctd_file = "M:/LAPEROUSE/data-processing/CTD/ascii/laperouse.ctd"
+kml_file = "laperouse.kml"
+
+[unix]
+tsg_file = "./data/fr26/laperouse.gps"
+ctd_file = "./data/fr26/laperouse.ctd"
+kml_file = "./laperouse.kml"
+
