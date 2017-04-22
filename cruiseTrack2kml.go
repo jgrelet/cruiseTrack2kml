@@ -22,10 +22,10 @@ import (
 
 // arg var
 var (
-	config   tomlConfig
-	tsg_file string
-	ctd_file string
-	kml_file string
+	config  tomlConfig
+	tsgFile string
+	ctdFile string
+	kmlFile string
 )
 
 const version string = "cruiseTrack2kml, version 0.2  J.Grelet IRD - US191 IMAGO"
@@ -35,22 +35,22 @@ type tomlConfig struct {
 	Cruise  string
 	Ship    string
 	Windows struct {
-		Tsg_file string
-		Ctd_file string
-		Kml_file string
+		TsgFile string
+		CtdFile string
+		KmlFile string
 	}
 	Unix struct {
-		Tsg_file string
-		Ctd_file string
-		Kml_file string
+		TsgFile string
+		CtdFile string
+		KmlFile string
 	}
-	Ctd_plots      string
-	Tsg_plots      string
-	Ctd_prefix     int
-	Size_plots     int
-	Station_number bool
-	Tsg_split      string
-	Tsg_skip       int
+	CtdPlots      string
+	TsgPlots      string
+	CtdPrefix     int
+	SizePlots     int
+	StationNumber bool
+	TsgSplit      string
+	TsgSkip       int
 }
 
 // usefull macro
@@ -88,25 +88,25 @@ func init() {
 	}
 
 	if runtime.GOOS == "windows" {
-		tsg_file = config.Windows.Tsg_file
-		ctd_file = config.Windows.Ctd_file
-		kml_file = config.Windows.Kml_file
+		tsgFile = config.Windows.TsgFile
+		ctdFile = config.Windows.CtdFile
+		kmlFile = config.Windows.KmlFile
 	} else {
-		tsg_file = config.Unix.Tsg_file
-		ctd_file = config.Unix.Ctd_file
-		kml_file = config.Unix.Kml_file
+		tsgFile = config.Unix.TsgFile
+		ctdFile = config.Unix.CtdFile
+		kmlFile = config.Unix.KmlFile
 	}
 
 	pf("Cruise: %s\n", config.Cruise)
 	pf("Ship: %s\n", config.Ship)
-	pf("Ctd_plots: %s\n", config.Ctd_plots)
-	pf("Tsg_plots: %s\n", config.Tsg_plots)
-	pf("Ctd_file: %s\n", ctd_file)
-	pf("Tsg_file: %s\n", tsg_file)
-	pf("Kml_file: %s\n", kml_file)
+	pf("CtdPlots: %s\n", config.CtdPlots)
+	pf("TsgPlots: %s\n", config.TsgPlots)
+	pf("CtdFile: %s\n", ctdFile)
+	pf("TsgFile: %s\n", tsgFile)
+	pf("KmlFile: %s\n", kmlFile)
 }
 
-// convert position "DD MM.SS S" to decimal position
+// Position2Decimal convert position "DD MM.SS S" to decimal position
 func Position2Decimal(pos string) (float64, error) {
 
 	var multiplier float64 = 1
@@ -161,9 +161,9 @@ func main() {
 	ls := gokml.NewLineString()
 
 	// read TSG track
-	opts := fileExtractor.NewFileExtractOptions().SetFilename(tsg_file)
-	opts.SetVarsList(config.Tsg_split)
-	opts.SetSkipLine(config.Tsg_skip)
+	opts := fileExtractor.NewFileExtractOptions().SetFilename(tsgFile)
+	opts.SetVarsList(config.TsgSplit)
+	opts.SetSkipLine(config.TsgSkip)
 
 	// print options
 	p(opts)
@@ -190,7 +190,7 @@ func main() {
 	// fill description markup with the TSG picture link inside <![CDATA[...]]>
 	// All characters enclosed between these two sequences are interpreted as characters
 	description := fmt.Sprintf("<![CDATA[\n<img src='%s' width='%d' />]]>",
-		config.Tsg_plots, config.Size_plots)
+		config.TsgPlots, config.SizePlots)
 	// define block Placemark for line
 	placemark := fmt.Sprintf("%s cruise track on R/V %s", config.Cruise, config.Ship)
 	pm := gokml.NewPlacemark(placemark, description, ls)
@@ -199,22 +199,22 @@ func main() {
 	f.AddFeature(pm)
 
 	// read CTD position
-	fid_ctd, err := os.Open(ctd_file)
+	fidCtd, err := os.Open(ctdFile)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer fid_ctd.Close()
+	defer fidCtd.Close()
 
-	scanner_ctd := bufio.NewScanner(fid_ctd)
-	var i int = 1
+	scannerCtd := bufio.NewScanner(fidCtd)
+	i := 1
 	var filename string
-	var type_cast string
+	var typeCast string
 
 	// TODOS:
 	// check the first valid line with a regex
 	// add the column label inside .toml file
-	for scanner_ctd.Scan() {
-		str := scanner_ctd.Text()
+	for scannerCtd.Scan() {
+		str := scannerCtd.Text()
 		values := strings.Fields(str)
 		//p(values)
 
@@ -225,26 +225,26 @@ func main() {
 		}
 		// convert profile with the right format (usually %03d or %05d)
 		prfl, _ := strconv.Atoi(profile)
-		format := fmt.Sprintf("%%0%1dd", config.Ctd_prefix)
+		format := fmt.Sprintf("%%0%1dd", config.CtdPrefix)
 		profile = fmt.Sprintf(format, prfl)
 		// extract data from station line
-		begin_date := values[1]
-		begin_hour := values[2]
-		end_date := values[3]
-		end_hour := values[4]
+		beginDate := values[1]
+		beginHour := values[2]
+		endDate := values[3]
+		endHour := values[4]
 		lat := fmt.Sprintf("%s %s", values[5], values[6])
 		lon := fmt.Sprintf("%s %s", values[7], values[8])
 		pmax := values[9]
-		bottom_depth := values[10]
+		bottomDepth := values[10]
 		if len(values) > 11 {
 			filename = values[11]
 		} else {
 			filename = " "
 		}
 		if len(values) > 12 {
-			type_cast = values[12]
+			typeCast = values[12]
 		} else {
-			type_cast = " "
+			typeCast = " "
 		}
 
 		// convert position to decimal values
@@ -264,19 +264,19 @@ func main() {
 		header := fmt.Sprintf("\n<pre>Station n° %s  Type: %s  Filename: %s\n"+
 			"Begin Date: %s %s  End Date: %s %s\nLatitude: %s  Longitude: %s \n"+
 			"Max depth: %s   Bathy: %s</pre>\n",
-			profile, type_cast, filename, begin_date, begin_hour,
-			end_date, end_hour, lat, lon, pmax, bottom_depth)
+			profile, typeCast, filename, beginDate, beginHour,
+			endDate, endHour, lat, lon, pmax, bottomDepth)
 
 		// fill description markup with the CTD picture link inside <![CDATA[...]]>
 		// All characters enclosed between these two sequences are interpreted as characters
-		files := fmt.Sprintf(config.Ctd_plots, profile)
+		files := fmt.Sprintf(config.CtdPlots, profile)
 		description := fmt.Sprintf("%s<![CDATA[\n<img src='%s' width='%d' />]]>",
-			header, files, config.Size_plots)
+			header, files, config.SizePlots)
 
 		// add new Placemark markup with station number, description and location (point object)
 		//
 		var newName string
-		if config.Station_number {
+		if config.StationNumber {
 			newName = fmt.Sprintf("%s", profile)
 		} else {
 			newName = fmt.Sprintf("%d", i)
@@ -294,18 +294,18 @@ func main() {
 	pf("%s", k.Render())
 
 	// open ASCII file for writing result
-	fid_kml, err := os.Create(kml_file)
+	fidKml, err := os.Create(kmlFile)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer fid_kml.Close()
+	defer fidKml.Close()
 
 	// use buffered mode for writing
-	fbuf_kml := bufio.NewWriter(fid_kml)
+	fbufKml := bufio.NewWriter(fidKml)
 	// write kml to file
-	fmt.Fprintln(fbuf_kml, k.Render())
-	fbuf_kml.Flush()
+	fmt.Fprintln(fbufKml, k.Render())
+	fbufKml.Flush()
 
 	// display the filename to screen
-	p(kml_file)
+	p(kmlFile)
 }
