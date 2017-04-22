@@ -1,26 +1,25 @@
 # this is a configuration file for cruiseTrack2kml program
 
-cruise = "PIRATA-FR25"
-ship = "THALASSA"
+cruise = "ABRACOS2"
+ship = "ANTEA"
 
-ctd_plots = "data/fr25/ctd/dfr25%s.jpg"
-ctd_prefix = 3
-tsg_plots = "data/fr25/tsg/PIRATA-FR25_TSG_SCATTER.png"
-#http:gcwww.brest.ird.fr/us191/cruises/cassiopee/CTD/plots/dcsp%s-TS02Dens.jpg'
-size_plots = 700
+ctdPlots = "http://192.168.81.172/ABRA2-CTD/dabra2%s.jpg"
+ctdPrefix = 3
+tsgPlots = "http://192.168.81.172/ABRA2-TSG/ABRACOS2_TSG_COLCOR_SQUATTER.png"
 
-tsg_skip = 2
-tsg_split = "LATITUDE,2,LONGITUDE,3"
-ctd_skip = 1
-ctd_split = "PRFL,1,BEGIN_DATE,2,BEGIN_TIME,3,END_DATE,4,END_TIME,5,LAT,6,LAT_S,7,LON,8,LON_S,9,TYPE_CAST,-1,PMAX,10,BOTTOM_DEPTH,11"
+sizePlots = 700
+stationNumber = true
+tsgSkip = 2
+tsgSplit = "LATITUDE,2,LONGITUDE,3"
+ctdSkip = 1
+ctdSplit = "PRFL,1,BEGIN_DATE,2,BEGIN_TIME,3,END_DATE,4,END_TIME,5,LAT,6,LAT_S,7,LON,8,LON_S,9,TYPE_CAST,-1,PMAX,10,BOTTOM_DEPTH,11"
 
 [windows]
-tsg_file = "data/fr25/pirata-fr25.gps"
-ctd_file = "data/fr25/pirata-fr25.ctd"
-kml_file = "pirata-fr25.kml"
+tsgFile = "../../THERMO/ascii/abracos2-raw.gps"
+ctdFile = "../ascii/abracos2.ctd"
+kmlFile = "abracos2.kml"
 
 [unix]
-tsg_file = "./data/fr25/pirata-fr25.gps"
-ctd_file = "./data/fr25/pirata-fr25.ctd"
-kml_file = "./pirata-fr25.kml"
-
+tsgFile = "./data/fr26/ascii/pirata-fr26.gps"
+ctdFile = "./data/fr26/pirata-fr26.ctd"
+kmlFile = "./pirata-fr26.kml"

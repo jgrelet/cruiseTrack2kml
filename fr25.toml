@@ -3,24 +3,24 @@
 cruise = "PIRATA-FR25"
 ship = "THALASSA"
 
-ctd_plots = "data/fr25/ctd/dfr25%s.jpg"
-ctd_prefix = 3
+ctdPlots = "data/fr25/ctd/dfr25%s.jpg"
+ctdPrefix = 3
 tsg_plots = "data/fr25/tsg/PIRATA-FR25_TSG_SCATTER.png"
 #http:gcwww.brest.ird.fr/us191/cruises/cassiopee/CTD/plots/dcsp%s-TS02Dens.jpg'
-size_plots = 700
+sizePlots = 700
 
-tsg_skip = 2
-tsg_split = "LATITUDE,2,LONGITUDE,3"
-ctd_skip = 1
-ctd_split = "PRFL,1,BEGIN_DATE,2,BEGIN_TIME,3,END_DATE,4,END_TIME,5,LAT,6,LAT_S,7,LON,8,LON_S,9,TYPE_CAST,-1,PMAX,10,BOTTOM_DEPTH,11"
+tsgSkip = 2
+tsgSplit = "LATITUDE,2,LONGITUDE,3"
+ctdSkip = 1
+ctdSplit = "PRFL,1,BEGIN_DATE,2,BEGIN_TIME,3,END_DATE,4,END_TIME,5,LAT,6,LAT_S,7,LON,8,LON_S,9,TYPE_CAST,-1,PMAX,10,BOTTOM_DEPTH,11"
 
 [windows]
-tsg_file = "data/fr25/pirata-fr25.gps"
-ctd_file = "data/fr25/pirata-fr25.ctd"
-kml_file = "pirata-fr25.kml"
+tsgFile = "data/fr25/pirata-fr25.gps"
+ctdFile = "data/fr25/pirata-fr25.ctd"
+kmlFile = "pirata-fr25.kml"
 
 [unix]
-tsg_file = "./data/fr25/pirata-fr25.gps"
-ctd_file = "./data/fr25/pirata-fr25.ctd"
-kml_file = "./pirata-fr25.kml"
+tsgFile = "./data/fr25/pirata-fr25.gps"
+ctdFile = "./data/fr25/pirata-fr25.ctd"
+kmlFile = "./pirata-fr25.kml"
 
