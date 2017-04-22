@@ -1,0 +1,12 @@
+/.vscode
+*.exe
+*.o
+*.a
+*.swp
+*~
+*.jpg
+*.png
+*.kml
+*.kmz
+debug
+
