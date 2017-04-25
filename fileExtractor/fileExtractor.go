@@ -58,7 +58,7 @@ func (o *FileExtractOptions) Filename() string {
 	return o.filename
 }
 
-// SetVars will set the parameters and their columns to extract from file
+// SetVarsList will set the parameters and their columns to extract from file
 func (o *FileExtractOptions) SetVarsList(split string) *FileExtractOptions {
 	// create empty map and header list
 	m := map[string]int{}
@@ -103,7 +103,7 @@ func (o FileExtractOptions) String() string {
 		o.filename, o.hdr, o.varsList, o.skipLine)
 }
 
-// NewFileExtracter will create a new FileExtractor type with some values from
+// NewFileExtractor will create a new FileExtractor type with some values from
 // configuration (not implemented)
 func NewFileExtractor(o *FileExtractOptions) *FileExtractor {
 	if debugMode {
@@ -122,14 +122,14 @@ func NewFileExtractor(o *FileExtractOptions) *FileExtractor {
 	return fe
 }
 
-// get the the size of map data
+// Size get the the size of map data
 func (fe FileExtractor) Size() int {
 	return fe.size
 }
 
 // Read an ASCII file and extract data and save then to map data
-func (ext *FileExtractor) Read() error {
-	fid, err := os.Open(ext.filename)
+func (fe *FileExtractor) Read() error {
+	fid, err := os.Open(fe.filename)
 	if err != nil {
 		return err
 	}
@@ -139,7 +139,7 @@ func (ext *FileExtractor) Read() error {
 	scanner := bufio.NewScanner(fid)
 
 	// skip some lines
-	for i := 0; i < ext.skipLine; i++ {
+	for i := 0; i < fe.skipLine; i++ {
 		scanner.Scan()
 	}
 
@@ -151,44 +151,44 @@ func (ext *FileExtractor) Read() error {
 		str := scanner.Text()
 
 		// split the string str with defined separator
-		if ext.separator != "" {
-			values = strings.Split(str, ext.separator)
+		if fe.separator != "" {
+			values = strings.Split(str, fe.separator)
 		} else {
 			// split the string str with one or more space
 			values = strings.Fields(str)
 		}
 
 		// fill map data
-		for key, column := range ext.varsList {
+		for key, column := range fe.varsList {
 			// slice index start at 0
 			ind := column - 1
 
 			if ind < len(values) {
 				if v, err := strconv.ParseFloat(values[ind], 64); err == nil {
 					// column start at zero
-					ext.data[key] = append(ext.data[key], v)
+					fe.data[key] = append(fe.data[key], v)
 				}
 			} else {
 				continue
 			}
 		}
 
-		ext.size += 1
+		fe.size++
 
 	}
 	return nil
 }
 
-// get the the size of map data
+// Data get the the size of map data
 func (fe *FileExtractor) Data() map[string][]float64 {
 	return fe.data
 }
 
-// print the result
-func (ext FileExtractor) String() string {
+// String print the result
+func (fe FileExtractor) String() string {
 	var s []string
-	for key, _ := range ext.varsList {
-		s = append(s, fmt.Sprintf("\n%s: %7.3f", key, ext.data[key]))
+	for key := range fe.varsList {
+		s = append(s, fmt.Sprintf("\n%s: %7.3f", key, fe.data[key]))
 	}
 	return strings.Join(s, "")
 }
