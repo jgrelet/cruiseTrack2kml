@@ -17,7 +17,7 @@ import (
 
 var (
 	// configFile string = "config.toml"
-	configFile string = "cruise.toml"
+	configFile = "cruise.toml"
 )
 
 type tomlConfig struct {
