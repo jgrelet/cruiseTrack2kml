@@ -64,11 +64,9 @@ func init() {
 	var (
 		help       *bool
 		configFile string
-	//	 cruise string
 	)
 
 	help = flag.Bool("help", false, "display the help...")
-	//	flag.StringVar(&cruise, []string{"cruise"}, "", "cruise name")
 	echo = flag.Bool("echo", false, "display source to stdout")
 	flag.StringVar(&configFile, "config", "", "use alternate .toml config file")
 	flag.Parse()
@@ -152,7 +150,7 @@ func main() {
 	places := gokml.NewStyle("ProfileStyle", 255, 255, 0, 0)
 	// collection of icons Google makes available for Google Earth
 	// http://kml4earth.appspot.com/icons.html
-	//places.SetIconURL("http://maps.google.com/mapfiles/kml/paddle/wht-circle.png")
+	// places.SetIconURL("http://maps.google.com/mapfiles/kml/paddle/wht-circle.png")
 	places.SetIconURL("http://maps.google.com/mapfiles/kml/pushpin/red-pushpin.png")
 	f.AddFeature(places)
 
