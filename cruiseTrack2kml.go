@@ -23,6 +23,7 @@ import (
 
 // arg var
 var (
+	echo    *bool
 	config  tomlConfig
 	tsgFile string
 	ctdFile string
@@ -68,6 +69,7 @@ func init() {
 
 	help = flag.Bool("help", false, "display the help...")
 	//	flag.StringVar(&cruise, []string{"cruise"}, "", "cruise name")
+	echo = flag.Bool("echo", false, "display source to stdout")
 	flag.StringVar(&configFile, "config", "", "use alternate .toml config file")
 	flag.Parse()
 	if *help {
@@ -292,7 +294,9 @@ func main() {
 	//p(k)
 
 	// display kml content to screen
-	pf("%s", k.Render())
+	if *echo {
+		pf("%s", k.Render())
+	}
 
 	// open ASCII file for writing result
 	fidKml, err := os.Create(kmlFile)
