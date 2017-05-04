@@ -30,7 +30,7 @@ var (
 	kmlFile string
 )
 
-const version string = "cruiseTrack2kml, version 0.21  J.Grelet IRD - US191 IMAGO"
+const version string = "cruiseTrack2kml, version 0.3.0  J.Grelet IRD - US191 IMAGO"
 
 // toml config structure
 type tomlConfig struct {
@@ -53,6 +53,8 @@ type tomlConfig struct {
 	StationNumber bool
 	TsgSplit      string
 	TsgSkip       int
+	CtdSplit      string
+	CtdSkip       int
 }
 
 // usefull macro
@@ -136,6 +138,7 @@ func Position2Decimal(pos string) (float64, error) {
 func main() {
 
 	var latitude, longitude float64
+	const elevation = 0.0
 
 	// to change the flags on the default logger
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
@@ -170,20 +173,22 @@ func main() {
 	p(opts)
 
 	// initialize fileExtractor from options
-	ext := fileExtractor.NewFileExtractor(opts)
+	tsg := fileExtractor.NewFileExtractor(opts)
 
 	// read the file
-	ext.Read()
+	tsg.Read()
 
 	// display the value
-	lats := ext.Data()["LATITUDE"]
-	lons := ext.Data()["LONGITUDE"]
-	for i := 0; i < ext.Size(); i++ {
+	lats := tsg.Data()["LATITUDE"]
+	lons := tsg.Data()["LONGITUDE"]
+	for i := 0; i < tsg.Size(); i++ {
 		lat := lats[i]
 		lon := lons[i]
 
 		// create new point
-		np := gokml.NewPoint(lat, lon, 0.0)
+		u, _ := strconv.ParseFloat(lat.(string), 64)
+		v, _ := strconv.ParseFloat(lon.(string), 64)
+		np := gokml.NewPoint(u, v, elevation)
 		// add point to line
 		ls.AddPoint(np)
 	}
@@ -200,72 +205,73 @@ func main() {
 	f.AddFeature(pm)
 
 	// read CTD position
-	fidCtd, err := os.Open(ctdFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer fidCtd.Close()
+	opts = fileExtractor.NewFileExtractOptions().SetFilename(ctdFile)
+	opts.SetVarsList(config.CtdSplit)
+	opts.SetSkipLine(config.CtdSkip)
 
-	scannerCtd := bufio.NewScanner(fidCtd)
-	i := 1
-	var filename string
-	var typeCast string
+	// print options
+	p(opts)
 
-	// TODOS:
-	// check the first valid line with a regex
-	// add the column label inside .toml file
-	for scannerCtd.Scan() {
-		str := scannerCtd.Text()
-		values := strings.Fields(str)
-		//p(values)
+	// initialize fileExtractor from options
+	ctd := fileExtractor.NewFileExtractor(opts)
 
-		// skip first line
-		profile := values[0]
-		if profile == config.Cruise {
-			continue
-		}
-		// convert profile with the right format (usually %03d or %05d)
-		prfl, _ := strconv.Atoi(profile)
-		format := fmt.Sprintf("%%0%1dd", config.CtdPrefix)
-		profile = fmt.Sprintf(format, prfl)
-		// extract data from station line
-		beginDate := values[1]
-		beginHour := values[2]
-		endDate := values[3]
-		endHour := values[4]
-		lat := fmt.Sprintf("%s %s", values[5], values[6])
-		lon := fmt.Sprintf("%s %s", values[7], values[8])
-		pmax := values[9]
-		bottomDepth := values[10]
-		if len(values) > 11 {
-			filename = values[11]
-		} else {
-			filename = " "
-		}
-		if len(values) > 12 {
-			typeCast = values[12]
-		} else {
-			typeCast = " "
-		}
+	// read the file
+	ctd.Read()
+
+	// display the value
+	profiles := ctd.Data()["PRFL"]
+	latString := ctd.Data()["LAT"]
+	latSign := ctd.Data()["LAT_S"]
+	lonString := ctd.Data()["LON"]
+	lonSign := ctd.Data()["LON_S"]
+	beginDates := ctd.Data()["BEGIN_DATE"]
+	beginTimes := ctd.Data()["BEGIN_TIME"]
+	endDates := ctd.Data()["END_DATE"]
+	endTimes := ctd.Data()["END_TIME"]
+	pmaxs := ctd.Data()["PMAX"]
+	bottomDepths := ctd.Data()["BOTTOM_DEPTH"]
+	for i := 0; i < ctd.Size(); i++ {
+		profile := profiles[i]
+		beginDate := beginDates[i]
+		beginHour := beginTimes[i]
+		endDate := endDates[i]
+		endHour := endTimes[i]
+		lat := fmt.Sprintf("%s %s", latString[i].(string), latSign[i].(string))
+		lon := fmt.Sprintf("%s %s", lonString[i].(string), lonSign[i].(string))
+		pmax := pmaxs[i]
+		bottomDepth := bottomDepths[i]
+		/*
+			if len(values) > 11 {
+				filename = values[11]
+			} else {
+				filename = " "
+			}
+			if len(values) > 12 {
+				typeCast = values[12]
+			} else {
+				typeCast = " "
+			}
+		*/
+		filename := " "
+		typeCast := " "
 
 		// convert position to decimal values
-		if latitude, err = Position2Decimal(fmt.Sprintf("%s %s", values[5],
-			values[6])); err != nil {
+		var err error
+		if latitude, err = Position2Decimal(lat); err != nil {
 			log.Fatal(err)
 		}
-		if longitude, err = Position2Decimal(fmt.Sprintf("%s %s", values[7],
-			values[8])); err != nil {
+		if longitude, err = Position2Decimal(lon); err != nil {
 			log.Fatal(err)
 		}
 		// add positions of stations on map
 		// create new point for station
-		st := gokml.NewPoint(latitude, longitude, 0.0)
+		st := gokml.NewPoint(latitude, longitude, elevation)
 
 		// fill Ascii header from CTD file, use <pre> markup for LF
 		header := fmt.Sprintf("\n<pre>Station n° %s  Type: %s  Filename: %s\n"+
 			"Begin Date: %s %s  End Date: %s %s\nLatitude: %s  Longitude: %s \n"+
 			"Max depth: %s   Bathy: %s</pre>\n",
-			profile, typeCast, filename, beginDate, beginHour,
+			profile.(string), typeCast, filename, beginDate, beginHour,
 			endDate, endHour, lat, lon, pmax, bottomDepth)
 
 		// fill description markup with the CTD picture link inside <![CDATA[...]]>
@@ -278,7 +284,7 @@ func main() {
 		//
 		var newName string
 		if config.StationNumber {
-			newName = fmt.Sprintf("%s", profile)
+			newName = fmt.Sprintf("%s", profile.(string))
 		} else {
 			newName = fmt.Sprintf("%d", i)
 		}
@@ -311,4 +317,6 @@ func main() {
 
 	// display the filename to screen
 	p(kmlFile)
+	pf("TSG mark: %d\n", tsg.Size())
+	pf("CTD mark: %d\n", ctd.Size())
 }

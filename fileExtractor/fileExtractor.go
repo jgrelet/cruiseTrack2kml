@@ -30,7 +30,7 @@ type FileExtractOptions struct {
 // FileExtractor contains FileExtractOptions object and map data extracted from ASCII file.
 type FileExtractor struct {
 	*FileExtractOptions
-	data map[string][]float64
+	data map[string][]interface{}
 	size int
 }
 
@@ -112,13 +112,15 @@ func NewFileExtractor(o *FileExtractOptions) *FileExtractor {
 	// in this constructor, we use composition (or embedding) vs inheritance
 	fe := &FileExtractor{
 		FileExtractOptions: o,
-		data:               make(map[string][]float64),
+		data:               make(map[string][]interface{}),
 		size:               0,
 	}
 	// initialize map for each key to a slice
-	for _, name := range fe.hdr {
-		fe.data[name] = []float64{}
-	}
+	/*
+		for _, name := range fe.hdr {
+			fe.data[name] = []interface{}
+		}
+	*/
 	return fe
 }
 
@@ -164,10 +166,13 @@ func (fe *FileExtractor) Read() error {
 			ind := column - 1
 
 			if ind < len(values) {
-				if v, err := strconv.ParseFloat(values[ind], 64); err == nil {
-					// column start at zero
-					fe.data[key] = append(fe.data[key], v)
-				}
+				/*
+					if v, err := strconv.ParseFloat(values[ind], 64); err == nil {
+						// column start at zero
+						fe.data[key] = append(fe.data[key], v)
+					}
+				*/
+				fe.data[key] = append(fe.data[key], values[ind])
 			} else {
 				continue
 			}
@@ -180,7 +185,7 @@ func (fe *FileExtractor) Read() error {
 }
 
 // Data get the the size of map data
-func (fe *FileExtractor) Data() map[string][]float64 {
+func (fe *FileExtractor) Data() map[string][]interface{} {
 	return fe.data
 }
 

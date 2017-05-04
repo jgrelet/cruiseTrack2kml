@@ -9,14 +9,17 @@ tsgPlots = "http://192.168.81.172/ABRA2-TSG/ABRACOS2_TSG_COLCOR_SQUATTER.png"
 
 sizePlots = 700
 stationNumber = true
-tsgSkip = 2
+tsgSkip = 0
 tsgSplit = "LATITUDE,2,LONGITUDE,3"
+#tsgSkip = 2
+#tsgSplit = "LATITUDE,3,LONGITUDE,4"
 ctdSkip = 1
-ctdSplit = "PRFL,1,BEGIN_DATE,2,BEGIN_TIME,3,END_DATE,4,END_TIME,5,LAT,6,LAT_S,7,LON,8,LON_S,9,TYPE_CAST,-1,PMAX,10,BOTTOM_DEPTH,11"
+ctdSplit = "PRFL,1,BEGIN_DATE,2,BEGIN_TIME,3,END_DATE,4,END_TIME,5,LAT,6,LAT_S,7,LON,8,LON_S,9,PMAX,10,BOTTOM_DEPTH,11"
 
 [windows]
-tsgFile = "../../THERMO/ascii/abracos2-raw.gps"
-ctdFile = "../ascii/abracos2.ctd"
+tsgFile = "M:/ABRACOS2/data-processing/THERMO/ascii/abracos2-raw.gps"
+#tsgFile = "M:/ABRACOS2/data-processing/THERMO/ascii/abracos2-raw_tsg"
+ctdFile = "M:/ABRACOS2/data-processing/CTD/ascii/abracos2.ctd"
 kmlFile = "abracos2.kml"
 
 [unix]
