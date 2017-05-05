@@ -271,7 +271,7 @@ func main() {
 		header := fmt.Sprintf("\n<pre>Station n° %s  Type: %s  Filename: %s\n"+
 			"Begin Date: %s %s  End Date: %s %s\nLatitude: %s  Longitude: %s \n"+
 			"Max depth: %s   Bathy: %s</pre>\n",
-			profile.(string), typeCast, filename, beginDate, beginHour,
+			profile, typeCast, filename, beginDate, beginHour,
 			endDate, endHour, lat, lon, pmax, bottomDepth)
 
 		// fill description markup with the CTD picture link inside <![CDATA[...]]>
@@ -281,7 +281,6 @@ func main() {
 			header, files, config.SizePlots)
 
 		// add new Placemark markup with station number, description and location (point object)
-		//
 		var newName string
 		if config.StationNumber {
 			newName = fmt.Sprintf("%s", profile.(string))
