@@ -230,6 +230,7 @@ func main() {
 	endTimes := ctd.Data()["END_TIME"]
 	pmaxs := ctd.Data()["PMAX"]
 	bottomDepths := ctd.Data()["BOTTOM_DEPTH"]
+	profileFormat := fmt.Sprintf("%%0%dd", config.CtdPrefix)
 	for i := 0; i < ctd.Size(); i++ {
 		profile := profiles[i]
 		beginDate := beginDates[i]
@@ -240,6 +241,12 @@ func main() {
 		lon := fmt.Sprintf("%s %s", lonString[i].(string), lonSign[i].(string))
 		pmax := pmaxs[i]
 		bottomDepth := bottomDepths[i]
+		// convert profile to integer with the rigth Printf format
+		if theProfile, err := strconv.Atoi(profile.(string)); err == nil {
+			profile = fmt.Sprintf(profileFormat, theProfile)
+		} else {
+			log.Fatalf("Check the profile: %s %v\n", profile, err)
+		}
 		/*
 			if len(values) > 11 {
 				filename = values[11]
@@ -268,7 +275,7 @@ func main() {
 		st := gokml.NewPoint(latitude, longitude, elevation)
 
 		// fill Ascii header from CTD file, use <pre> markup for LF
-		header := fmt.Sprintf("\n<pre>Station n° %s  Type: %s  Filename: %s\n"+
+		header := fmt.Sprintf("\n<pre>Station n° %s Type: %s  Filename: %s\n"+
 			"Begin Date: %s %s  End Date: %s %s\nLatitude: %s  Longitude: %s \n"+
 			"Max depth: %s   Bathy: %s</pre>\n",
 			profile, typeCast, filename, beginDate, beginHour,
