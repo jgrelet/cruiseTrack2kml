@@ -18,24 +18,24 @@ creator        = "Jacques.Grelet_at_ird.fr"
   [files.ctd]
   filename = "test/CTD/dfr26001.cnv"
   skipline = 354
-  varlist = "PRES,3,DEPTH,4,ETDD,2,TEMP,5,PSAL,17,DENS,20,SVEL,22,DOX2,15,FLU2,13,TUR3,14,NAVG,23"
+  varlist = "PRES,3,float64,DEPTH,4,float64,ETDD,2,float64,TEMP,5,float64,PSAL,17,float64,DENS,20,float64,SVEL,22,float64,DOX2,15,float64,FLU2,13,float64,TUR3,14,float64,NAVG,23,int"
   prefix = 3
  
   [files.btl]
   filename = "test/CTD/fr26001.btl"
   skipline = 259
-  varlist = "BOTL,1,month,2,day,3,year,4,PSA1,5,PSA2,6,DO11,7,DO21,8,DO12,9,DO22,10,Potemp090C,11,Potemp190C,12,ETDD,13,PRES,14,DEPTH,15,TE01,16,TE02,17,CND1,18,CND2,19,DOV1,20,DOV2,21,DVT1,22,DVT2,23,FLU2,24"
+  varlist = "BOTL,1,int,month,2,int,day,3,int,year,4,int,PSA1,5,float64,PSA2,6,float64,DO11,7,float64,DO21,8,float64,DO12,9,float64,DO22,10,float64,Potemp090C,11,float64,Potemp190C,12,float64,ETDD,13,float64,PRES,14,float64,DEPTH,15,float64,TE01,16,float64,TE02,17,float64,CND1,18,float64,CND2,19,float64,DOV1,20,float64,DOV2,21,float64,DVT1,22,float64,DVT2,23,float64,FLU2,24,float64"
 
   [files.tsg]
   filename = "test/TSG/20160308-085453-TS_COLCOR.COLCOR"
   skipline = 6
-  varlist = "DATE,3,TIME,4,LATS,5,LATITUDE,6,LONS,7,LONGITUDE,8,SSTP,17,SSJT,18,COND,19,SSPS,20"
+  varlist = "DATE,3,string,TIME,4,string,LATS,5,string,LATITUDE,6,string,LONS,7,string,LONGITUDE,8,string,SSTP,17,float64,SSJT,18,float64,COND,19,float64,SSPS,20,float64"
   separator = ','
 
   [files.xbt]
   filename = "test/XBT/T7_00001.EDF"
   skipline = 41
-  varlist = "DEPTH,1,TEMP,2,SVEL,3"
+  varlist = "DEPTH,1,float64,TEMP,2,float64,SVEL,3,float64"
 
 [kml]
 filename = "pirata-fr26.kml"

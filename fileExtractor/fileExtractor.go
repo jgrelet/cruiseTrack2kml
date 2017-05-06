@@ -15,14 +15,20 @@ import (
 var p = fmt.Println
 
 // use for debug mode
-var debugMode = false
+var debugMode = true
 var debug io.Writer = ioutil.Discard
+
+//
+type Types struct {
+	column int
+	types  string
+}
 
 // FileExtractOptions contains configurable options for read an ASCII file.
 type FileExtractOptions struct {
 	filename  string
 	hdr       []string
-	varsList  map[string]int
+	varsList  map[string]Types
 	separator string
 	skipLine  int // number of line to skip before read data
 }
@@ -40,7 +46,7 @@ func NewFileExtractOptions() *FileExtractOptions {
 	o := &FileExtractOptions{
 		filename:  "",
 		hdr:       []string{},
-		varsList:  map[string]int{},
+		varsList:  map[string]Types{},
 		separator: "",
 		skipLine:  0,
 	}
@@ -61,17 +67,18 @@ func (o *FileExtractOptions) Filename() string {
 // SetVarsList will set the parameters and their columns to extract from file
 func (o *FileExtractOptions) SetVarsList(split string) *FileExtractOptions {
 	// create empty map and header list
-	m := map[string]int{}
+	m := map[string]Types{}
 	h := []string{}
 
 	// construct map from split
 	fields := strings.Split(split, ",")
-	for i := 0; i < len(fields); i += 2 {
+	for i := 0; i < len(fields); i += 3 {
 		if v, err := strconv.Atoi(fields[i+1]); err == nil {
-			m[fields[i]] = v
+			m[fields[i]] = Types{column: v, types: fields[i+2]}
 			h = append(h, fields[i])
 		} else {
-			log.Fatalf("Check the input of SetVars: %v\n", err)
+			log.Fatalf("Check the input of SetVars: [%v]: %v -> %v\n",
+				fields[i], fields[i+1], err)
 		}
 	}
 	// copy map and header list to FileExtractOptions object
@@ -81,7 +88,8 @@ func (o *FileExtractOptions) SetVarsList(split string) *FileExtractOptions {
 }
 
 // VarsList getter
-func (o *FileExtractOptions) VarsList() map[string]int {
+// TODOS: should return map[string]int ?
+func (o *FileExtractOptions) VarsList() map[string]Types {
 	return o.varsList
 }
 
@@ -161,9 +169,9 @@ func (fe *FileExtractor) Read() error {
 		}
 
 		// fill map data
-		for key, column := range fe.varsList {
+		for key, value := range fe.varsList {
 			// slice index start at 0
-			ind := column - 1
+			ind := value.column - 1
 
 			if ind < len(values) {
 				/*
@@ -185,8 +193,17 @@ func (fe *FileExtractor) Read() error {
 }
 
 // Data get the the size of map data
-func (fe *FileExtractor) Data() map[string][]interface{} {
-	return fe.data
+func (fe *FileExtractor) Data(s string) []interface{} {
+	v := fe.varsList[s].types
+	switch v {
+	case "int":
+		return fe.data[s]
+	case "float64":
+		return fe.data[s]
+	case "string":
+		return fe.data[s]
+	}
+	return fe.data[s]
 }
 
 // String print the result

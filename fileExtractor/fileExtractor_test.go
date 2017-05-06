@@ -64,8 +64,8 @@ func TestValidFileExtractor(t *testing.T) {
 	opts := NewFileExtractOptions()
 	opts.SetFilename("pirata-fr23_tsg")
 	assert.Equal(opts.Filename(), "pirata-fr23_tsg")
-	opts.SetVarsList("LATITUDE,3,LONGITUDE,4")
-	assert.Equal(opts.VarsList(), map[string]int{"LATITUDE": 3, "LONGITUDE": 4})
+	opts.SetVarsList("LATITUDE,3,float64,LONGITUDE,4,float64")
+	assert.Equal(opts.VarsList(), map[string]Types{"LATITUDE": {column: 3, types: "float64"}, "LONGITUDE": {column: 4, types: "float64"}})
 	assert.Equal(opts.hdr, []string{"LATITUDE", "LONGITUDE"})
 	assert.Len(opts.hdr, 2)
 	opts.SetSkipLine(2)
@@ -92,7 +92,7 @@ func TestFileExtractorFromConfigFile(t *testing.T) {
 	assert.Equal(config.Creator, "Jacques.Grelet_at_ird.fr")
 
 	// display informations only for debugging
-	//fmt.Println(debug, config)
+	fmt.Println(debug, config)
 
 	// loop over files
 	for instrument, file := range config.Files {
@@ -111,13 +111,13 @@ func TestFileExtractorFromConfigFile(t *testing.T) {
 			}
 			//fmt.Println(ext)
 			size := ext.Size() - 1
-			pres := ext.Data()["PRES"]
+			pres := ext.Data("PRES")
 			assert.Equal(2.0, pres[0])    // test the first pressure value
 			assert.Equal(7.0, pres[size]) // test the last pressure value
-			temp := ext.Data()["TEMP"]
+			temp := ext.Data("TEMP")
 			assert.Equal(24.7241, temp[0])
 			assert.Equal(24.7260, temp[size])
-			psal := ext.Data()["PSAL"]
+			psal := ext.Data("PSAL")
 			assert.Equal(35.7711, psal[0])
 			assert.Equal(35.7716, psal[size])
 
@@ -172,13 +172,13 @@ func TestFileExtractorFromConfigFile(t *testing.T) {
 			}
 			//fmt.Println(ext)
 			size := ext.Size() - 1
-			pres := ext.Data()["DEPTH"]
+			pres := ext.Data("DEPTH").(ext.VarsList["DEPTH"].Types)
 			assert.Equal(0.0, pres[0])    // test the first pressure value
 			assert.Equal(5.8, pres[size]) // test the last pressure value
-			temp := ext.Data()["TEMP"]
+			temp := ext.Data("TEMP")
 			assert.Equal(23.32, temp[0])
 			assert.Equal(23.23, temp[size])
-			svel := ext.Data()["SVEL"]
+			svel := ext.Data("SVEL")
 			assert.Equal(1530.25, svel[0])
 			assert.Equal(1530.10, svel[size])
 		}
