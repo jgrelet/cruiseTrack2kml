@@ -176,19 +176,21 @@ func main() {
 	tsg := fileExtractor.NewFileExtractor(opts)
 
 	// read the file
-	tsg.Read()
+	if err := tsg.Read(); err != nil {
+		log.Fatalln(err)
+	}
 
 	// display the value
-	lats := tsg.Data()["LATITUDE"]
-	lons := tsg.Data()["LONGITUDE"]
+	lats, _ := tsg.Data("LATITUDE")
+	lons, _ := tsg.Data("LONGITUDE")
 	for i := 0; i < tsg.Size(); i++ {
 		lat := lats[i]
 		lon := lons[i]
 
 		// create new point
-		u, _ := strconv.ParseFloat(lat.(string), 64)
-		v, _ := strconv.ParseFloat(lon.(string), 64)
-		np := gokml.NewPoint(u, v, elevation)
+		//u, _ := strconv.ParseFloat(lat.(string), 64)
+		//v, _ := strconv.ParseFloat(lon.(string), 64)
+		np := gokml.NewPoint(lat.(float64), lon.(float64), elevation)
 		// add point to line
 		ls.AddPoint(np)
 	}
@@ -216,20 +218,22 @@ func main() {
 	ctd := fileExtractor.NewFileExtractor(opts)
 
 	// read the file
-	ctd.Read()
+	if err := ctd.Read(); err != nil {
+		log.Fatalln(err)
+	}
 
 	// display the value
-	profiles := ctd.Data()["PRFL"]
-	latString := ctd.Data()["LAT"]
-	latSign := ctd.Data()["LAT_S"]
-	lonString := ctd.Data()["LON"]
-	lonSign := ctd.Data()["LON_S"]
-	beginDates := ctd.Data()["BEGIN_DATE"]
-	beginTimes := ctd.Data()["BEGIN_TIME"]
-	endDates := ctd.Data()["END_DATE"]
-	endTimes := ctd.Data()["END_TIME"]
-	pmaxs := ctd.Data()["PMAX"]
-	bottomDepths := ctd.Data()["BOTTOM_DEPTH"]
+	profiles, _ := ctd.Data("PRFL")
+	latString, _ := ctd.Data("LAT")
+	latSign, _ := ctd.Data("LAT_S")
+	lonString, _ := ctd.Data("LON")
+	lonSign, _ := ctd.Data("LON_S")
+	beginDates, _ := ctd.Data("BEGIN_DATE")
+	beginTimes, _ := ctd.Data("BEGIN_TIME")
+	endDates, _ := ctd.Data("END_DATE")
+	endTimes, _ := ctd.Data("END_TIME")
+	pmaxs, _ := ctd.Data("PMAX")
+	bottomDepths, _ := ctd.Data("BOTTOM_DEPTH")
 	profileFormat := fmt.Sprintf("%%0%dd", config.CtdPrefix)
 	for i := 0; i < ctd.Size(); i++ {
 		profile := profiles[i]
@@ -242,11 +246,7 @@ func main() {
 		pmax := pmaxs[i]
 		bottomDepth := bottomDepths[i]
 		// convert profile to integer with the rigth Printf format
-		if theProfile, err := strconv.Atoi(profile.(string)); err == nil {
-			profile = fmt.Sprintf(profileFormat, theProfile)
-		} else {
-			log.Fatalf("Check the profile: %s %v\n", profile, err)
-		}
+		profile = fmt.Sprintf(profileFormat, profile.(int))
 		/*
 			if len(values) > 11 {
 				filename = values[11]
@@ -277,7 +277,7 @@ func main() {
 		// fill Ascii header from CTD file, use <pre> markup for LF
 		header := fmt.Sprintf("\n<pre>Station n° %s Type: %s  Filename: %s\n"+
 			"Begin Date: %s %s  End Date: %s %s\nLatitude: %s  Longitude: %s \n"+
-			"Max depth: %s   Bathy: %s</pre>\n",
+			"Max depth: %6.1f   Bathy: %6.1f</pre>\n",
 			profile, typeCast, filename, beginDate, beginHour,
 			endDate, endHour, lat, lon, pmax, bottomDepth)
 

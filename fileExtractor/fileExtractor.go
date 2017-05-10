@@ -2,6 +2,7 @@ package fileExtractor
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -13,12 +14,13 @@ import (
 
 // usefull macro
 var p = fmt.Println
+var pf = fmt.Printf
 
 // use for debug mode
 var debugMode = true
 var debug io.Writer = ioutil.Discard
 
-//
+// Types contain column number and value type
 type Types struct {
 	column int
 	types  string
@@ -36,7 +38,7 @@ type FileExtractOptions struct {
 // FileExtractor contains FileExtractOptions object and map data extracted from ASCII file.
 type FileExtractor struct {
 	*FileExtractOptions
-	data map[string][]interface{}
+	data map[string][]string
 	size int
 }
 
@@ -72,9 +74,13 @@ func (o *FileExtractOptions) SetVarsList(split string) *FileExtractOptions {
 
 	// construct map from split
 	fields := strings.Split(split, ",")
+	if len(fields)%3 != 0 {
+		log.Fatalf("Check the pa list: %s, invalid number of parameters, not modulo 3", split)
+	}
 	for i := 0; i < len(fields); i += 3 {
 		if v, err := strconv.Atoi(fields[i+1]); err == nil {
 			m[fields[i]] = Types{column: v, types: fields[i+2]}
+			//pf("%#v -> %#v\n", h, fields[i])
 			h = append(h, fields[i])
 		} else {
 			log.Fatalf("Check the input of SetVars: [%v]: %v -> %v\n",
@@ -120,7 +126,7 @@ func NewFileExtractor(o *FileExtractOptions) *FileExtractor {
 	// in this constructor, we use composition (or embedding) vs inheritance
 	fe := &FileExtractor{
 		FileExtractOptions: o,
-		data:               make(map[string][]interface{}),
+		data:               make(map[string][]string),
 		size:               0,
 	}
 	// initialize map for each key to a slice
@@ -141,6 +147,7 @@ func (fe FileExtractor) Size() int {
 func (fe *FileExtractor) Read() error {
 	fid, err := os.Open(fe.filename)
 	if err != nil {
+		log.Printf("FileExtractor.Read(): can't open %s, check it !!!\n", fe.filename)
 		return err
 	}
 	defer fid.Close()
@@ -193,24 +200,40 @@ func (fe *FileExtractor) Read() error {
 }
 
 // Data get the the size of map data
-func (fe *FileExtractor) Data(s string) []interface{} {
-	v := fe.varsList[s].types
-	switch v {
+func (fe *FileExtractor) Data(s string) ([]interface{}, error) {
+	switch v := fe.varsList[s].types; v {
 	case "int":
-		return fe.data[s]
+		var data = make([]interface{}, 0)
+		for _, value := range fe.data[s] {
+			if v, err := strconv.Atoi(value); err == nil {
+				data = append(data, v)
+			}
+		}
+		return data, nil
 	case "float64":
-		return fe.data[s]
+		var data = make([]interface{}, 0)
+		for _, value := range fe.data[s] {
+			if v, err := strconv.ParseFloat(value, 64); err == nil {
+				data = append(data, v)
+			}
+		}
+		return data, nil
 	case "string":
-		return fe.data[s]
+		var data = make([]interface{}, 0)
+		for _, value := range fe.data[s] {
+			data = append(data, value)
+		}
+		return data, nil
 	}
-	return fe.data[s]
+	log.Fatalf("Invalid type: %v", fe.varsList[s].types)
+	return nil, errors.New("FileExtractor.Data error")
 }
 
 // String print the result
 func (fe FileExtractor) String() string {
 	var s []string
 	for key := range fe.varsList {
-		s = append(s, fmt.Sprintf("\n%s: %7.3f", key, fe.data[key]))
+		s = append(s, fmt.Sprintf("\n%s: %s", key, fe.data[key]))
 	}
 	return strings.Join(s, "")
 }
