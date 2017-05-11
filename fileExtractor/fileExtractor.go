@@ -179,49 +179,39 @@ func (fe *FileExtractor) Read() error {
 		for key, value := range fe.varsList {
 			// slice index start at 0
 			ind := value.column - 1
-
 			if ind < len(values) {
-				/*
-					if v, err := strconv.ParseFloat(values[ind], 64); err == nil {
-						// column start at zero
-						fe.data[key] = append(fe.data[key], v)
-					}
-				*/
 				fe.data[key] = append(fe.data[key], values[ind])
 			} else {
 				continue
 			}
 		}
-
 		fe.size++
-
 	}
 	return nil
 }
 
-// Data get the the size of map data
+// Data return a slice of type for the var s
 func (fe *FileExtractor) Data(s string) ([]interface{}, error) {
+	var data = make([]interface{}, len(fe.data[s]))
+	sl := fe.data[s]
 	switch v := fe.varsList[s].types; v {
-	case "int":
-		var data = make([]interface{}, 0)
-		for _, value := range fe.data[s] {
-			if v, err := strconv.Atoi(value); err == nil {
-				data = append(data, v)
+	case "int", "int32", "int64":
+		for i := 0; i < len(sl); i++ {
+			if v, err := strconv.Atoi(sl[i]); err == nil {
+				data[i] = v
 			}
 		}
 		return data, nil
-	case "float64":
-		var data = make([]interface{}, 0)
-		for _, value := range fe.data[s] {
-			if v, err := strconv.ParseFloat(value, 64); err == nil {
-				data = append(data, v)
+	case "float", "float32", "float64":
+		for i := 0; i < len(sl); i++ {
+			if v, err := strconv.ParseFloat(sl[i], 64); err == nil {
+				data[i] = v
 			}
 		}
 		return data, nil
-	case "string":
-		var data = make([]interface{}, 0)
-		for _, value := range fe.data[s] {
-			data = append(data, value)
+	case "string", "char":
+		for i := 0; i < len(sl); i++ {
+			data[i] = sl[i]
 		}
 		return data, nil
 	}
