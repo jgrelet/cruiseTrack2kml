@@ -2,7 +2,6 @@ package fileExtractor
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -191,7 +190,7 @@ func (fe *FileExtractor) Read() error {
 }
 
 // Data return a slice of type for the var s
-func (fe *FileExtractor) Data(s string) ([]interface{}, error) {
+func (fe *FileExtractor) Data(s string) []interface{} {
 	var data = make([]interface{}, len(fe.data[s]))
 	sl := fe.data[s]
 	switch v := fe.varsList[s].types; v {
@@ -201,22 +200,20 @@ func (fe *FileExtractor) Data(s string) ([]interface{}, error) {
 				data[i] = v
 			}
 		}
-		return data, nil
 	case "float", "float32", "float64":
 		for i := 0; i < len(sl); i++ {
 			if v, err := strconv.ParseFloat(sl[i], 64); err == nil {
 				data[i] = v
 			}
 		}
-		return data, nil
 	case "string", "char":
 		for i := 0; i < len(sl); i++ {
 			data[i] = sl[i]
 		}
-		return data, nil
+	default:
+		log.Fatalf("Invalid type: %v", fe.varsList[s].types)
 	}
-	log.Fatalf("Invalid type: %v", fe.varsList[s].types)
-	return nil, errors.New("FileExtractor.Data error")
+	return data
 }
 
 // String print the result

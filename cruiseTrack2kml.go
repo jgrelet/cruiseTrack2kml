@@ -181,8 +181,8 @@ func main() {
 	}
 
 	// display the value
-	lats, _ := tsg.Data("LATITUDE")
-	lons, _ := tsg.Data("LONGITUDE")
+	lats := tsg.Data("LATITUDE")
+	lons := tsg.Data("LONGITUDE")
 	for i := 0; i < tsg.Size(); i++ {
 		lat := lats[i]
 		lon := lons[i]
@@ -223,17 +223,17 @@ func main() {
 	}
 
 	// display the value
-	profiles, _ := ctd.Data("PRFL")
-	latString, _ := ctd.Data("LAT")
-	latSign, _ := ctd.Data("LAT_S")
-	lonString, _ := ctd.Data("LON")
-	lonSign, _ := ctd.Data("LON_S")
-	beginDates, _ := ctd.Data("BEGIN_DATE")
-	beginTimes, _ := ctd.Data("BEGIN_TIME")
-	endDates, _ := ctd.Data("END_DATE")
-	endTimes, _ := ctd.Data("END_TIME")
-	pmaxs, _ := ctd.Data("PMAX")
-	bottomDepths, _ := ctd.Data("BOTTOM_DEPTH")
+	profiles := ctd.Data("PRFL")
+	latString := ctd.Data("LAT")
+	latSign := ctd.Data("LAT_S")
+	lonString := ctd.Data("LON")
+	lonSign := ctd.Data("LON_S")
+	beginDates := ctd.Data("BEGIN_DATE")
+	beginTimes := ctd.Data("BEGIN_TIME")
+	endDates := ctd.Data("END_DATE")
+	endTimes := ctd.Data("END_TIME")
+	pmaxs := ctd.Data("PMAX")
+	bottomDepths := ctd.Data("BOTTOM_DEPTH")
 	profileFormat := fmt.Sprintf("%%0%dd", config.CtdPrefix)
 	for i := 0; i < ctd.Size(); i++ {
 		profile := profiles[i]
