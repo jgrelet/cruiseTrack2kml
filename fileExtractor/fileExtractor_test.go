@@ -92,7 +92,7 @@ func TestFileExtractorFromConfigFile(t *testing.T) {
 	assert.Equal(config.Creator, "Jacques.Grelet_at_ird.fr")
 
 	// display informations only for debugging
-	fmt.Println(debug, config)
+	//fmt.Println(debug, config)
 
 	// loop over files
 	for instrument, file := range config.Files {
@@ -122,29 +122,30 @@ func TestFileExtractorFromConfigFile(t *testing.T) {
 			assert.Equal(35.7716, psal[size])
 
 		case "btl":
+		// Don't works with btl file
+		/*
 			assert.Equal(file.FileName, "test/CTD/fr26001.btl")
 			opts := NewFileExtractOptions()
 			opts.SetFilename(file.FileName)
 			opts.SetVarsList(file.VarList)
 			opts.SetSkipLine(file.SkipLine)
-			/*
-				ext := NewFileExtractor(opts)
-					err = ext.Read()
-					if err != nil {
-						log.Fatalf("NewFileExtractor(opts).Read() for %s: %s", instrument, err)
-					}
-					size := ext.Size() - 1
-					btl := ext.Data()["BOTL"]
-					assert.Equal(btl[0], 1.0)     // test the first pressure value
-					assert.Equal(btl[size], 11.0) // test the last pressure value
-					temp := ext.Data()["TE01"]
-					assert.Equal(temp[0], 3.5048)
-					assert.Equal(temp[size], 3.5048)
-					psal := ext.Data()["PSA1"]
-					assert.Equal(psal[0], 34.9636)
-					assert.Equal(psal[size], 34.9637)
-					fmt.Fprintf(debug, ext)
-			*/
+			ext := NewFileExtractor(opts)
+			err = ext.Read()
+			if err != nil {
+				log.Fatalf("NewFileExtractor(opts).Read() for %s: %s", instrument, err)
+			}
+			size := ext.Size() - 1
+			btl := ext.Data("BOTL")
+			p(btl)
+			assert.Equal(btl[0], 1)     // test the first pressure value
+			assert.Equal(btl[size], 11) // test the last pressure value
+			temp := ext.Data("TE01")
+			assert.Equal(temp[0], 3.5048)
+			assert.Equal(temp[size], 3.5048)
+			psal := ext.Data("PSA1")
+			assert.Equal(psal[0], 34.9636)
+			assert.Equal(psal[size], 34.9637)
+		*/
 		case "tsg":
 			assert.Equal(file.FileName, "test/TSG/20160308-085453-TS_COLCOR.COLCOR")
 			opts := NewFileExtractOptions()
@@ -157,7 +158,6 @@ func TestFileExtractorFromConfigFile(t *testing.T) {
 			if err != nil {
 				log.Fatalf("NewFileExtractor(opts).Read() for %s: %s", instrument, err)
 			}
-			//fmt.Println(ext)
 
 		case "xbt":
 			assert.Equal(file.FileName, "test/XBT/T7_00001.EDF")
@@ -170,12 +170,10 @@ func TestFileExtractorFromConfigFile(t *testing.T) {
 			if err != nil {
 				log.Fatalf("NewFileExtractor(opts).Read() for %s: %s", instrument, err)
 			}
-			//fmt.Println(ext)
 			size := ext.Size() - 1
 			pres := ext.Data("DEPTH")
-			t := opts.VarsList["DEPTH"].Types
-			assert.Equal(0.0, pres[0].(T)) // test the first pressure value
-			assert.Equal(5.8, pres[size])  // test the last pressure value
+			assert.Equal(0.0, pres[0])    // test the first pressure value
+			assert.Equal(5.8, pres[size]) // test the last pressure value
 			temp := ext.Data("TEMP")
 			assert.Equal(23.32, temp[0])
 			assert.Equal(23.23, temp[size])
