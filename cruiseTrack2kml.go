@@ -27,6 +27,7 @@ var (
 	config  tomlConfig
 	tsgFile string
 	ctdFile string
+	xbtFile string
 	kmlFile string
 )
 
@@ -39,22 +40,28 @@ type tomlConfig struct {
 	Windows struct {
 		TsgFile string
 		CtdFile string
+		XbtFile string
 		KmlFile string
 	}
 	Unix struct {
 		TsgFile string
 		CtdFile string
+		XbtFile string
 		KmlFile string
 	}
 	CtdPlots      string
+	XbtPlots      string
 	TsgPlots      string
 	CtdPrefix     int
+	XbtPrefix     int
 	SizePlots     int
 	StationNumber bool
 	TsgSplit      string
 	TsgSkip       int
 	CtdSplit      string
 	CtdSkip       int
+	XbtSplit      string
+	XbtSkip       int
 }
 
 // usefull macro
@@ -93,10 +100,12 @@ func init() {
 	if runtime.GOOS == "windows" {
 		tsgFile = config.Windows.TsgFile
 		ctdFile = config.Windows.CtdFile
+		xbtFile = config.Windows.XbtFile
 		kmlFile = config.Windows.KmlFile
 	} else {
 		tsgFile = config.Unix.TsgFile
 		ctdFile = config.Unix.CtdFile
+		xbtFile = config.Unix.XbtFile
 		kmlFile = config.Unix.KmlFile
 	}
 
@@ -105,6 +114,7 @@ func init() {
 	pf("CtdPlots: %s\n", config.CtdPlots)
 	pf("TsgPlots: %s\n", config.TsgPlots)
 	pf("CtdFile: %s\n", ctdFile)
+	pf("XbtFile: %s\n", xbtFile)
 	pf("TsgFile: %s\n", tsgFile)
 	pf("KmlFile: %s\n", kmlFile)
 }
@@ -150,12 +160,21 @@ func main() {
 	k.AddFeature(f)
 
 	// define new style for station icons
-	places := gokml.NewStyle("ProfileStyle", 255, 255, 0, 0)
+	// NewStyle(name string, alpha uint8, red uint8, green uint8, blue uint8)
+	placeProfiles := gokml.NewStyle("ProfileStyle", 255, 0, 255, 255)
 	// collection of icons Google makes available for Google Earth
 	// http://kml4earth.appspot.com/icons.html
 	// places.SetIconURL("http://maps.google.com/mapfiles/kml/paddle/wht-circle.png")
-	places.SetIconURL("http://maps.google.com/mapfiles/kml/pushpin/red-pushpin.png")
-	f.AddFeature(places)
+	placeProfiles.SetIconURL("http://maps.google.com/mapfiles/kml/pushpin/wht-pushpin.png")
+	f.AddFeature(placeProfiles)
+
+	// define new style for station icons
+	placeStations := gokml.NewStyle("StationStyle", 255, 255, 0, 0)
+	// collection of icons Google makes available for Google Earth
+	// http://kml4earth.appspot.com/icons.html
+	// places.SetIconURL("http://maps.google.com/mapfiles/kml/paddle/wht-circle.png")
+	placeStations.SetIconURL("http://maps.google.com/mapfiles/kml/pushpin/wht-pushpin.png")
+	f.AddFeature(placeStations)
 
 	// define style for line
 	track := gokml.NewStyle("TrackStyle", 255, 0, 255, 0)
@@ -246,7 +265,7 @@ func main() {
 		pmax := pmaxs[i]
 		bottomDepth := bottomDepths[i]
 		// convert profile to integer with the rigth Printf format
-		profile = fmt.Sprintf(profileFormat, profile.(int))
+		theProfile := fmt.Sprintf(profileFormat, profile.(int))
 		/*
 			if len(values) > 11 {
 				filename = values[11]
@@ -275,22 +294,98 @@ func main() {
 		st := gokml.NewPoint(latitude, longitude, elevation)
 
 		// fill Ascii header from CTD file, use <pre> markup for LF
-		header := fmt.Sprintf("\n<pre>Station n° %s Type: %s  Filename: %s\n"+
+		header := fmt.Sprintf("\n<pre>Station: %s Type: %s  Filename: %s\n"+
 			"Begin Date: %s %s  End Date: %s %s\nLatitude: %s  Longitude: %s \n"+
 			"Max depth: %6.1f   Bathy: %6.1f</pre>\n",
-			profile, typeCast, filename, beginDate, beginHour,
+			theProfile, typeCast, filename, beginDate, beginHour,
 			endDate, endHour, lat, lon, pmax, bottomDepth)
 
 		// fill description markup with the CTD picture link inside <![CDATA[...]]>
 		// All characters enclosed between these two sequences are interpreted as characters
-		files := fmt.Sprintf(config.CtdPlots, profile)
+		files := fmt.Sprintf(config.CtdPlots, theProfile)
 		description := fmt.Sprintf("%s<![CDATA[\n<img src='%s' width='%d' />]]>",
 			header, files, config.SizePlots)
 
 		// add new Placemark markup with station number, description and location (point object)
 		var newName string
 		if config.StationNumber {
-			newName = fmt.Sprintf("%s", profile.(string))
+			newName = fmt.Sprintf("%d", profile)
+		} else {
+			newName = fmt.Sprintf("%d", i)
+		}
+		pm := gokml.NewPlacemark(newName, description, st)
+		pm.SetStyle("StationStyle")
+
+		// add placemark markup to kml file
+		f.AddFeature(pm)
+	}
+	// read XBT positions
+	opts = fileExtractor.NewFileExtractOptions().SetFilename(xbtFile)
+	opts.SetVarsList(config.XbtSplit)
+	opts.SetSkipLine(config.XbtSkip)
+
+	// print options
+	p(opts)
+
+	// initialize fileExtractor from options
+	xbt := fileExtractor.NewFileExtractor(opts)
+
+	// read the file
+	if err := xbt.Read(); err != nil {
+		log.Fatalln(err)
+	}
+
+	// display the value
+	profiles = xbt.Data("PRFL")
+	latString = xbt.Data("LAT")
+	latSign = xbt.Data("LAT_S")
+	lonString = xbt.Data("LON")
+	lonSign = xbt.Data("LON_S")
+	beginDates = xbt.Data("BEGIN_DATE")
+	beginTimes = xbt.Data("BEGIN_TIME")
+	pmaxs = xbt.Data("PMAX")
+	typeProbe := xbt.Data("PROBE")
+	profileFormat = fmt.Sprintf("%%0%dd", config.XbtPrefix)
+	for i := 0; i < xbt.Size(); i++ {
+		profile := profiles[i]
+		beginDate := beginDates[i]
+		beginHour := beginTimes[i]
+		lat := fmt.Sprintf("%s %s", latString[i].(string), latSign[i].(string))
+		lon := fmt.Sprintf("%s %s", lonString[i].(string), lonSign[i].(string))
+		pmax := pmaxs[i]
+		// convert profile to integer with the rigth Printf format
+		theProfile := fmt.Sprintf(profileFormat, profile)
+		theProbe := typeProbe[i]
+		filename := " "
+
+		// convert position to decimal values
+		var err error
+		if latitude, err = Position2Decimal(lat); err != nil {
+			log.Fatal(err)
+		}
+		if longitude, err = Position2Decimal(lon); err != nil {
+			log.Fatal(err)
+		}
+		// add positions of stations on map
+		// create new point for station
+		st := gokml.NewPoint(latitude, longitude, elevation)
+
+		// fill Ascii header from XBT file, use <pre> markup for LF
+		header := fmt.Sprintf("\n<pre>Profile: %s Type: %s  Filename: %s\n"+
+			"Begin Date: %s %s\nLatitude: %s  Longitude: %s \n"+
+			"Max depth: %6.1f</pre>\n",
+			theProfile, theProbe, filename, beginDate, beginHour, lat, lon, pmax)
+
+		// fill description markup with the CTD picture link inside <![CDATA[...]]>
+		// All characters enclosed between these two sequences are interpreted as characters
+		files := fmt.Sprintf(config.XbtPlots, theProfile)
+		description := fmt.Sprintf("%s<![CDATA[\n<img src='%s' width='%d' />]]>",
+			header, files, config.SizePlots)
+
+		// add new Placemark markup with station number, description and location (point object)
+		var newName string
+		if config.StationNumber {
+			newName = fmt.Sprintf("%d", profile)
 		} else {
 			newName = fmt.Sprintf("%d", i)
 		}
@@ -299,9 +394,7 @@ func main() {
 
 		// add placemark markup to kml file
 		f.AddFeature(pm)
-		i++
 	}
-	//p(k)
 
 	// display kml content to screen
 	if *echo {
@@ -325,4 +418,5 @@ func main() {
 	p(kmlFile)
 	pf("TSG mark: %d\n", tsg.Size())
 	pf("CTD mark: %d\n", ctd.Size())
+	pf("XBT mark: %d\n", xbt.Size())
 }

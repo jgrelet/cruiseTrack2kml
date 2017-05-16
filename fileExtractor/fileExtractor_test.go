@@ -173,9 +173,9 @@ func TestFileExtractorFromConfigFile(t *testing.T) {
 			//fmt.Println(ext)
 			size := ext.Size() - 1
 			pres := ext.Data("DEPTH")
-			t := opts.VarsList["DEPTH"].Types
-			assert.Equal(0.0, pres[0].(T)) // test the first pressure value
-			assert.Equal(5.8, pres[size])  // test the last pressure value
+			//	t := opts.VarsList["DEPTH"].Types
+			assert.Equal(0.0, pres[0])    // test the first pressure value
+			assert.Equal(5.8, pres[size]) // test the last pressure value
 			temp := ext.Data("TEMP")
 			assert.Equal(23.32, temp[0])
 			assert.Equal(23.23, temp[size])
