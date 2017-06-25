@@ -17,10 +17,10 @@ ctdSkip = 1
 ctdSplit = "PRFL,1,int,BEGIN_DATE,2,string,BEGIN_TIME,3,string,END_DATE,4,string,END_TIME,5,string,LAT,6,string,LAT_S,7,string,LON,8,string,LON_S,9,string,PMAX,10,float64,BOTTOM_DEPTH,11,float64"
 
 [windows]
-#tsgFile = "M:/ABRACOS2/data-processing/THERMO/ascii/abracos2-raw.gps"
-tsgFile = "data/abracos2/abracos2-raw.gps"
-#ctdFile = "M:/ABRACOS2/data-processing/CTD/ascii/abracos2.ctd"
-ctdFile = "data/abracos2/abracos2.ctd"
+tsgFile = "M:/ABRACOS2/data-processing/THERMO/ascii/abracos2-raw.gps"
+#tsgFile = "data/abracos2/abracos2-raw.gps"
+ctdFile = "M:/ABRACOS2/data-processing/CTD/ascii/abracos2.ctd"
+#ctdFile = "data/abracos2/abracos2.ctd"
 kmlFile = "abracos2.kml"
 
 [unix]

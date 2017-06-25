@@ -31,7 +31,7 @@ var (
 	kmlFile string
 )
 
-const version string = "cruiseTrack2kml, version 0.3.0  J.Grelet IRD - US191 IMAGO"
+const version string = "cruiseTrack2kml, version 0.3.1  J.Grelet IRD - US191 IMAGO"
 
 // toml config structure
 type tomlConfig struct {
@@ -41,13 +41,11 @@ type tomlConfig struct {
 		TsgFile string
 		CtdFile string
 		XbtFile string
-		KmlFile string
 	}
 	Unix struct {
 		TsgFile string
 		CtdFile string
 		XbtFile string
-		KmlFile string
 	}
 	CtdPlots      string
 	XbtPlots      string
@@ -78,6 +76,7 @@ func init() {
 	help = flag.Bool("help", false, "display the help...")
 	echo = flag.Bool("echo", false, "display source to stdout")
 	flag.StringVar(&configFile, "config", "", "use alternate .toml config file")
+	flag.StringVar(&kmlFile, "output", "", "use alternate  outpout kml file (default is toml Cruise name)")
 	flag.Parse()
 	if *help {
 		flag.PrintDefaults()
@@ -96,17 +95,18 @@ func init() {
 		p(err)
 		return
 	}
+	if kmlFile == "" {
+		kmlFile = fmt.Sprintf("%s.kml", config.Cruise)
+	}
 
 	if runtime.GOOS == "windows" {
 		tsgFile = config.Windows.TsgFile
 		ctdFile = config.Windows.CtdFile
 		xbtFile = config.Windows.XbtFile
-		kmlFile = config.Windows.KmlFile
 	} else {
 		tsgFile = config.Unix.TsgFile
 		ctdFile = config.Unix.CtdFile
 		xbtFile = config.Unix.XbtFile
-		kmlFile = config.Unix.KmlFile
 	}
 
 	pf("Cruise: %s\n", config.Cruise)
@@ -320,80 +320,82 @@ func main() {
 		f.AddFeature(pm)
 	}
 	// read XBT positions
-	opts = fileExtractor.NewFileExtractOptions().SetFilename(xbtFile)
-	opts.SetVarsList(config.XbtSplit)
-	opts.SetSkipLine(config.XbtSkip)
+	if xbtFile != "none" {
+		opts = fileExtractor.NewFileExtractOptions().SetFilename(xbtFile)
+		opts.SetVarsList(config.XbtSplit)
+		opts.SetSkipLine(config.XbtSkip)
 
-	// print options
-	p(opts)
+		// print options
+		p(opts)
 
-	// initialize fileExtractor from options
-	xbt := fileExtractor.NewFileExtractor(opts)
+		// initialize fileExtractor from options
+		xbt := fileExtractor.NewFileExtractor(opts)
 
-	// read the file
-	if err := xbt.Read(); err != nil {
-		log.Fatalln(err)
-	}
-
-	// display the value
-	profiles = xbt.Data("PRFL")
-	latString = xbt.Data("LAT")
-	latSign = xbt.Data("LAT_S")
-	lonString = xbt.Data("LON")
-	lonSign = xbt.Data("LON_S")
-	beginDates = xbt.Data("BEGIN_DATE")
-	beginTimes = xbt.Data("BEGIN_TIME")
-	pmaxs = xbt.Data("PMAX")
-	typeProbe := xbt.Data("PROBE")
-	profileFormat = fmt.Sprintf("%%0%dd", config.XbtPrefix)
-	for i := 0; i < xbt.Size(); i++ {
-		profile := profiles[i]
-		beginDate := beginDates[i]
-		beginHour := beginTimes[i]
-		lat := fmt.Sprintf("%s %s", latString[i].(string), latSign[i].(string))
-		lon := fmt.Sprintf("%s %s", lonString[i].(string), lonSign[i].(string))
-		pmax := pmaxs[i]
-		// convert profile to integer with the rigth Printf format
-		theProfile := fmt.Sprintf(profileFormat, profile)
-		theProbe := typeProbe[i]
-		filename := " "
-
-		// convert position to decimal values
-		var err error
-		if latitude, err = Position2Decimal(lat); err != nil {
-			log.Fatal(err)
+		// read the file
+		if err := xbt.Read(); err != nil {
+			log.Fatalln(err)
 		}
-		if longitude, err = Position2Decimal(lon); err != nil {
-			log.Fatal(err)
+
+		// display the value
+		profiles = xbt.Data("PRFL")
+		latString = xbt.Data("LAT")
+		latSign = xbt.Data("LAT_S")
+		lonString = xbt.Data("LON")
+		lonSign = xbt.Data("LON_S")
+		beginDates = xbt.Data("BEGIN_DATE")
+		beginTimes = xbt.Data("BEGIN_TIME")
+		pmaxs = xbt.Data("PMAX")
+		typeProbe := xbt.Data("PROBE")
+		profileFormat = fmt.Sprintf("%%0%dd", config.XbtPrefix)
+		for i := 0; i < xbt.Size(); i++ {
+			profile := profiles[i]
+			beginDate := beginDates[i]
+			beginHour := beginTimes[i]
+			lat := fmt.Sprintf("%s %s", latString[i].(string), latSign[i].(string))
+			lon := fmt.Sprintf("%s %s", lonString[i].(string), lonSign[i].(string))
+			pmax := pmaxs[i]
+			// convert profile to integer with the rigth Printf format
+			theProfile := fmt.Sprintf(profileFormat, profile)
+			theProbe := typeProbe[i]
+			filename := " "
+
+			// convert position to decimal values
+			var err error
+			if latitude, err = Position2Decimal(lat); err != nil {
+				log.Fatal(err)
+			}
+			if longitude, err = Position2Decimal(lon); err != nil {
+				log.Fatal(err)
+			}
+			// add positions of stations on map
+			// create new point for station
+			st := gokml.NewPoint(latitude, longitude, elevation)
+
+			// fill Ascii header from XBT file, use <pre> markup for LF
+			header := fmt.Sprintf("\n<pre>Profile: %s Type: %s  Filename: %s\n"+
+				"Begin Date: %s %s\nLatitude: %s  Longitude: %s \n"+
+				"Max depth: %6.1f</pre>\n",
+				theProfile, theProbe, filename, beginDate, beginHour, lat, lon, pmax)
+
+			// fill description markup with the CTD picture link inside <![CDATA[...]]>
+			// All characters enclosed between these two sequences are interpreted as characters
+			files := fmt.Sprintf(config.XbtPlots, theProfile)
+			description := fmt.Sprintf("%s<![CDATA[\n<img src='%s' width='%d' />]]>",
+				header, files, config.SizePlots)
+
+			// add new Placemark markup with station number, description and location (point object)
+			var newName string
+			if config.StationNumber {
+				newName = fmt.Sprintf("%d", profile)
+			} else {
+				newName = fmt.Sprintf("%d", i)
+			}
+			pm := gokml.NewPlacemark(newName, description, st)
+			pm.SetStyle("ProfileStyle")
+
+			// add placemark markup to kml file
+			f.AddFeature(pm)
 		}
-		// add positions of stations on map
-		// create new point for station
-		st := gokml.NewPoint(latitude, longitude, elevation)
-
-		// fill Ascii header from XBT file, use <pre> markup for LF
-		header := fmt.Sprintf("\n<pre>Profile: %s Type: %s  Filename: %s\n"+
-			"Begin Date: %s %s\nLatitude: %s  Longitude: %s \n"+
-			"Max depth: %6.1f</pre>\n",
-			theProfile, theProbe, filename, beginDate, beginHour, lat, lon, pmax)
-
-		// fill description markup with the CTD picture link inside <![CDATA[...]]>
-		// All characters enclosed between these two sequences are interpreted as characters
-		files := fmt.Sprintf(config.XbtPlots, theProfile)
-		description := fmt.Sprintf("%s<![CDATA[\n<img src='%s' width='%d' />]]>",
-			header, files, config.SizePlots)
-
-		// add new Placemark markup with station number, description and location (point object)
-		var newName string
-		if config.StationNumber {
-			newName = fmt.Sprintf("%d", profile)
-		} else {
-			newName = fmt.Sprintf("%d", i)
-		}
-		pm := gokml.NewPlacemark(newName, description, st)
-		pm.SetStyle("ProfileStyle")
-
-		// add placemark markup to kml file
-		f.AddFeature(pm)
 	}
 
 	// display kml content to screen
@@ -403,6 +405,7 @@ func main() {
 
 	// open ASCII file for writing result
 	fidKml, err := os.Create(kmlFile)
+	p(kmlFile)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -415,8 +418,7 @@ func main() {
 	fbufKml.Flush()
 
 	// display the filename to screen
-	p(kmlFile)
 	pf("TSG mark: %d\n", tsg.Size())
 	pf("CTD mark: %d\n", ctd.Size())
-	pf("XBT mark: %d\n", xbt.Size())
+	//pf("XBT mark: %d\n", xbt.Size())
 }
