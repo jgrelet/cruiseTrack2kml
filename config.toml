@@ -1,29 +1,33 @@
 # this is a configuration file for cruiseTrack2kml program
 
-cruise = "ABRACOS2"
+cruise = "SARGASSE"
 ship = "ANTEA"
-
-ctdPlots = "http://192.168.81.172/ABRA2-CTD/dabra2%s.jpg"
-ctdPrefix = 3
-tsgPlots = "http://192.168.81.172/ABRA2-TSG/ABRACOS2_TSG_COLCOR_SQUATTER.png"
-
 sizePlots = 700
 stationNumber = true
-tsgSkip = 0
-tsgSplit = "LATITUDE,2,float64,LONGITUDE,3,float64"
-#tsgSkip = 2
-#tsgSplit = "LATITUDE,3,LONGITUDE,4"
-ctdSkip = 1
-ctdSplit = "PRFL,1,int,BEGIN_DATE,2,string,BEGIN_TIME,3,string,END_DATE,4,string,END_TIME,5,string,LAT,6,string,LAT_S,7,string,LON,8,string,LON_S,9,string,PMAX,10,float64,BOTTOM_DEPTH,11,float64"
+
+# File is relative from Drive
+[ctd]
+File = "/SARGASSE/data-processing/CTD/ascii/sargasse.ctd"
+Prefix = 2
+Skip = 1
+Split = "PRFL,1,int,BEGIN_DATE,2,string,BEGIN_TIME,3,string,END_DATE,4,string,END_TIME,5,string,LAT,6,string,LAT_S,7,string,LON,8,string,LON_S,9,string,PMAX,10,float64,BOTTOM_DEPTH,11,float64"
+Plots = "http://www.brest.ird.fr/us191/cruises/sargasse/CTD/ds%s.jpg"
+
+[xbt]
+File = "none"
+Prefix = 2
+Skip = 2
+Split = "PRFL,1,int,BEGIN_DATE,2,string,BEGIN_TIME,3,string,LAT,4,string,LAT_S,5,string,LON,6,string,LON_S,7,string,PMAX,8,float64,PROBE,9,string"
+Plots = "http://www.brest.ird.fr/us191/cruises/sargasse/XBT/SARGASSE-%s_XBT.png"
+
+[tsg]
+File = "/SARGASSE/data-processing/THERMO/ascii/sargasse-raw.gps"
+Skip = 2
+Split = "LATITUDE,2,float64,LONGITUDE,3,float64"
+Plots = "http://www.brest.ird.fr/us191/cruises/sargasse/TSG/SARGASSE_TSG_COLCOR_SCATTER.png"
 
 [windows]
-tsgFile = "M:/ABRACOS2/data-processing/THERMO/ascii/abracos2-raw.gps"
-#tsgFile = "data/abracos2/abracos2-raw.gps"
-ctdFile = "M:/ABRACOS2/data-processing/CTD/ascii/abracos2.ctd"
-#ctdFile = "data/abracos2/abracos2.ctd"
-kmlFile = "abracos2.kml"
+Drive = "m:"
 
 [unix]
-tsgFile = "./data/fr26/ascii/pirata-fr26.gps"
-ctdFile = "./data/fr26/pirata-fr26.ctd"
-kmlFile = "./pirata-fr26.kml"
+Drive = "/m"
