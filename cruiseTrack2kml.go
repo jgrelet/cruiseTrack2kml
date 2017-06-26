@@ -31,7 +31,7 @@ var (
 	kmlFile string
 )
 
-const version string = "cruiseTrack2kml, version 0.3.1  J.Grelet IRD - US191 IMAGO"
+const version string = "cruiseTrack2kml, version 0.3.2  J.Grelet IRD - US191 IMAGO"
 
 // toml config structure
 type tomlConfig struct {
@@ -71,6 +71,7 @@ type tomlConfig struct {
 // usefull macro
 var p = fmt.Println
 var pf = fmt.Printf
+var spf = fmt.Sprintf
 
 // Basic flag declarations are available for string, integer, and boolean options.
 func init() {
@@ -152,6 +153,7 @@ func Position2Decimal(pos string) (float64, error) {
 func main() {
 
 	var latitude, longitude float64
+	var render string
 	const elevation = 0.0
 
 	// to change the flags on the default logger
@@ -230,7 +232,7 @@ func main() {
 		// add placemark markup to kml file
 		f.AddFeature(pm)
 		// display the TSG number to screen
-		pf("TSG mark: %d\n", tsg.Size())
+		render = spf("TSG mark: %d\n", tsg.Size())
 	}
 
 	// read CTD position
@@ -329,7 +331,7 @@ func main() {
 			f.AddFeature(pm)
 		}
 		// display CTD number to screen
-		pf("CTD mark: %d\n", ctd.Size())
+		render += spf("CTD mark: %d\n", ctd.Size())
 	}
 	// read XBT positions
 	if strings.ToLower(config.Xbt.File) != "none" {
@@ -409,8 +411,9 @@ func main() {
 			f.AddFeature(pm)
 		}
 		// display the XBT number to screen
-		pf("XBT mark: %d\n", xbt.Size())
+		render += spf("XBT mark: %d\n", xbt.Size())
 	}
+	pf(render)
 
 	// display kml content to screen
 	if *echo {
