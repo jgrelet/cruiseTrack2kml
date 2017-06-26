@@ -99,8 +99,7 @@ func init() {
 	}
 	//  read config file
 	if _, err := toml.DecodeFile(configFile, &config); err != nil {
-		p(err)
-		return
+		log.Fatalln(err)
 	}
 	if kmlFile == "" {
 		kmlFile = fmt.Sprintf("%s.kml", config.Cruise)
