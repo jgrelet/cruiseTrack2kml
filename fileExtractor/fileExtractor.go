@@ -3,7 +3,6 @@ package fileExtractor
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -17,7 +16,7 @@ var pf = fmt.Printf
 
 // use for debug mode
 var debugMode = true
-var debug io.Writer = ioutil.Discard
+var debug = ioutil.Discard
 
 // Types contain column number and value type
 type Types struct {
