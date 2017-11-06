@@ -33,8 +33,8 @@ func main() {
 	ext.Read()
 
 	// display the value
-	lats := ext.Data()["LATITUDE"]
-	lons := ext.Data()["LONGITUDE"]
+	lats := ext.Data("LATITUDE")
+	lons := ext.Data("LONGITUDE")
 	for i := 0; i < ext.Size(); i++ {
 		lat := lats[i]
 		lon := lons[i]
