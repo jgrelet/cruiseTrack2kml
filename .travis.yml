@@ -6,3 +6,7 @@ go:
   - tip
 
 sudo: false
+
+before_script:
+  - go vet ./...
+  - go get github.com/BurntSushi/toml
