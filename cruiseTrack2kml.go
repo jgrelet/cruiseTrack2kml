@@ -94,7 +94,7 @@ func init() {
 	flag.Parse()
 	if *help {
 		pf("%s - %s - %s\n", version, author, buildTime)
-		//flag.PrintDefaults()
+		flag.PrintDefaults()
 		os.Exit(0)
 	}
 
