@@ -31,13 +31,13 @@ var (
 )
 
 var (
-	// version set in Makefile
+	// Version set in Makefile
 	// see: http://stackoverflow.com/questions/11354518/golang-application-auto-build-versioning
-	version = "undefined"
-	// author harcoded
-	author = " J.Grelet IRD - US191 IMAGO "
-	// buildTime set in Makefile
-	buildTime = "undefined"
+	Version = "undefined"
+	// Author harcoded
+	Author = " J.Grelet IRD - US191 IMAGO "
+	// BuildTime set in Makefile
+	BuildTime = "undefined"
 )
 
 // toml config structure
@@ -93,13 +93,13 @@ func init() {
 	flag.StringVar(&kmlFile, "output", "", "use alternate  outpout kml file (default is toml Cruise name)")
 	flag.Parse()
 	if *help {
-		pf("%s - %s - %s\n", version, author, buildTime)
+		pf("\nVersion: %s - %s - %s\n", Version, BuildTime, Author)
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
 
 	// print version
-	pf("%s - %s - %s\n", version, author, buildTime)
+	pf("\nVersion: %s - %s - %s\n", Version, BuildTime, Author)
 
 	if configFile == "" {
 		configFile = "config.toml"
