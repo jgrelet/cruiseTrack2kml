@@ -8,6 +8,6 @@ go:
 sudo: false
 
 before_script:
-  - go vet ./...
   - go get github.com/BurntSushi/toml
   - go get github.com/gershwinlabs/gokml       
+  - go vet ./...
