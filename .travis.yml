@@ -10,4 +10,5 @@ sudo: false
 before_script:
   - go get github.com/BurntSushi/toml
   - go get github.com/gershwinlabs/gokml       
+  - go get github.com/stretchr/testify/assert
   - go vet ./...
