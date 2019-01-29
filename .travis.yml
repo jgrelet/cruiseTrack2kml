@@ -6,3 +6,6 @@ go:
   - tip
 
 sudo: false
+
+before_script:
+  - go get github.com/gershwinlabs/gokml        
