@@ -13,7 +13,6 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/BurntSushi/toml"
 	"github.com/gershwinlabs/gokml"
@@ -31,7 +30,15 @@ var (
 	kmlFile string
 )
 
-const version string = "cruiseTrack2kml, version 0.3.2  J.Grelet IRD - US191 IMAGO"
+var (
+	// Version set in Makefile
+	// see: http://stackoverflow.com/questions/11354518/golang-application-auto-build-versioning
+	Version = "undefined"
+	// Author harcoded
+	Author = " J.Grelet IRD - US191 IMAGO "
+	// BuildTime set in Makefile
+	BuildTime = "undefined"
+)
 
 // toml config structure
 type tomlConfig struct {
@@ -86,13 +93,13 @@ func init() {
 	flag.StringVar(&kmlFile, "output", "", "use alternate  outpout kml file (default is toml Cruise name)")
 	flag.Parse()
 	if *help {
+		pf("\nVersion: %s - %s - %s\n", Version, BuildTime, Author)
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
 
 	// print version
-	p(version)
-	p(time.Now().Format(time.RFC850) + "\n")
+	pf("\nVersion: %s - %s - %s\n", Version, BuildTime, Author)
 
 	if configFile == "" {
 		configFile = "config.toml"

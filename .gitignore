@@ -1,5 +1,7 @@
 /.vs*
 *.exe
+*-amd64
+*-arm
 *.o
 *.a
 *.swp
