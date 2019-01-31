@@ -12,8 +12,6 @@ os:
 
 dist: trusty
     
-sudo: false
-
 env:
   global:
   - secure: Oe4tuCG+6IvilDR/NTos07eusDb5mBKfUGvhks61K9fBQdBKFdK+45npA8a8bAR65itl7oGHe/YT42GVOTvJfwqfGzM2YMIbYoa02az57bz/56iQjr75XnND6T7XljxYai1s6dGNG3oN1mmV1WSAawPQsRQ7XeZ5CiR2h7I/Rv2OxSoRLO37z/10c5ZcgkUVmHtqnGKctX7uXd7dg7pJ8wBg0yvYhqMawPRiNOVQcmCG8yPf5dmNOMyaHxbXNFSAj95tpag6UHbent+TQL/GD8XRWBqrkcOkSA4aPmjVVh4bF16aBDaEcVxodfN3ox5ASF/2fpydxUU/u3axBqiJ4C5VFIIBY8X56DsWhmXoXFhxyxqOtP0tVZmvvo1kIz2iOWPIo2HF8rkCMdIdrZ84PizzPCwOKFhw5l44yA9nAwGc9CM247kquBElumE5T0lpvA2f4f+HwHRCZZI/XYSJ64xdW1G8OKpjf3p1pDff8dLP6DFYHWMrMR2Pyemrg7q0x8tkNAes38IyhChVIl4MypLRx3MKOqygW1KzP51uruzS68AjndkgpGvOCfwtiIyc1RNC6vRDwjjBE1Keo76cWDM4D/PsCiJ91c8Y32g16GnoFo4LsFTpWQ04HZKH0T7GXGNrROVNalIF6QZgmhUeRvGLq8LYoVrlOqqiH0KTIXs=
@@ -33,5 +31,4 @@ before_script:
 
 after_success:    
   - ls -la
-  - ls -la $GOPATH/bin/*
-  - curl -T $GOPATH/bin/* --ftp-create-dirs ftp://$FTP_USER:$FTP_PASSWORD@ftp.ifremer.fr/US191/$TARGET/$TRAVIS_OS_NAME/$TRAVIS_GO_VERSION/
+  - curl -T $TARGET.exe --ftp-create-dirs ftp://$FTP_USER:$FTP_PASSWORD@ftp.ifremer.fr/US191/$TARGET/$TRAVIS_OS_NAME/$TRAVIS_GO_VERSION/
