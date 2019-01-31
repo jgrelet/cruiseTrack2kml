@@ -2,12 +2,12 @@ language: go
 
 go:
   - 1.8.5
-    #  - 1.11.5
+  - 1.11.5
     #  - tip
 
 os:
   - windows
-    #  - linux
+  - linux
     #  - osx
 
 dist: trusty
