@@ -31,4 +31,4 @@ before_script:
 
 after_success:    
   - ls -la
-  - curl -T $TARGET.exe --ftp-create-dirs ftp://$FTP_USER:$FTP_PASSWORD@ftp.ifremer.fr/US191/$TARGET/$TRAVIS_OS_NAME/$TRAVIS_GO_VERSION/
+  - curl -T $TARGET.exe --ftp-create-dirs ftp://$FTP_USER:$FTP_PASSWORD@ftp.ifremer.fr//US191/$TARGET/$TRAVIS_OS_NAME/$TRAVIS_GO_VERSION/
