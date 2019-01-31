@@ -2,11 +2,18 @@ language: go
 
 go:
   - 1.8.5
-  - 1.9.2
+  - 1.11.5
   - tip
 
+os:
+  - windows
+  - linux
+  - osx
+
+dist: trusty
+    
 sudo: false
 
 before_script:
-  - go vet ./...
   - go get github.com/BurntSushi/toml
+  - go vet ./...
