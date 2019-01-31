@@ -2,17 +2,20 @@ language: go
 
 go:
   - 1.8.5
-  - 1.11.5
-  - tip
+    #  - 1.11.5
+    #  - tip
 
 os:
   - windows
-  - linux
-  - osx
+    #  - linux
+    #  - osx
 
 dist: trusty
     
 sudo: false
+
+before_install:
+- if [ ${TRAVIS_OS_NAME} == "windows" ]; then choco install make; fi        
 
 before_script:
   - go get github.com/BurntSushi/toml
