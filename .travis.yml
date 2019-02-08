@@ -2,7 +2,7 @@ language: go
 go:
 - 1.11.x
 os:
-- windows
+#- windows
 - linux
 dist: trusty
 env:
@@ -10,7 +10,7 @@ env:
   - DIST=US191/$TARGET/$TRAVIS_OS_NAME/
   - secure: 5U6Zu9YfVxoNoAmaa+3i7GAXSF90xn5Wxwo/ThAX5ZuCZKmC4+o1Ai9CwWSByWej1Vd9PCi7rSnOXGmYkmHiyVGyAaPVLZdp5vmki2qOANDP627Rmk/wgKL/9D8HaRpjmQBqJyst/0NnC0W3nnET27+//l4jSLFEIvmg4Pd4vJBoWTTg3dO+xvekXF5Nhv/zjA3XpUhES59blIXbGt8wcRz/e7TAp1NsD8D58B77DpEBUyewFWvbPL/PzSk2E72B0eKTs3cmLBCE5N08dskg1an4n8IBRvtu1xekchPF3ZZAL6nuwrsxGtHTg6HpPNvTSFqzX/eQFW0VorMqwNxzF5DETWUYFy4boOeuditUdWrc1xjaPxj36bIgrC3vlArFwc6Gv9p4h3GobYRqOa+HoELv2ezL+pTPnDNK3nshwQXkkqkJfbRIahsFpNVFnnp4jGMrVcE6BLndpFwldDhH7F/9y8u/YS1Ua9BS5hDsFzDQce7zaSBhpADizMlt77D0N01wPdfsOOTnapmeMab2StyHPSdL3euZu5w33XwNbRaeuWadu86wWdXIitPYlkLwzIsJRJvMZcEZpvlbR1RkwNu79mMvf8YF239Z7RPyDQMMmzrmhlP6l40Zjh3F+X80eLHtV9zrwHyqZkN8FZDjT36pH/D77JjmLuZMXWeRncU=
   - secure: 7g1pPx+2lkZj53J+/2kxHH5Oe/UlgHKhk3GqHIuuaUSdwJMnEry+Bu5pPRTwBntBuaEYkqJ9viS5MVNpg8AL7Zm3wB+SbxIivCx1nudw2raZ8vH9X+6/BQ4okaxkjX7xJwyY8a3IvvyhvlxR94mBJUtRGmqRFx3xhll8+BaEhdRwU+GIv/qtHklVdSlzQLmLB5QNZzjfOc7PAh50qT+51lmUoLQJkumU8a7XtO37BqUU4zHgxqQg637tVEYQ+Ro8tZBBRVLLQDNYEpZ+awTSHyqFRqCJz51bH0TQP3KqabbqJ09/jPjncYrR0JSbXe1JBEa+0TS5ooVduMxN5eXpUBUsHYEtyj3hg3/Oq59n77RXmFZgQa0fpHLqB/30p9/Q3EljYfrrmKVPWXMKqGfDKFg8hx3M9GjSqSMoFAaYXo86esa4OD8iOkdIVTOBmovcnibNo3/PJflXngfOLgLmo0cioWTvx4ebx4tVqsfMxoFGb3jucaDChLX9fGaMeRuBK8Azv7CObHYF0JeAYd378TZf6mOm5zziaEfWiQkqmaqBSL3Bi3cjMhZSbehKMzmVYw7DM9vZNc+d57wqczpQPsEmznFfK78gmE89VcU9hhOdac+mqG8BymfmwYPHyHbcXwMbk1372U95gSH+tGIdRgVbufbmv+PsioqqrYzdir4=
-install:
+before_install:
 - if [ ${TRAVIS_OS_NAME} == "windows" ]; then choco install make -y; fi
 before_script:
 - go get -t -v ./...
