@@ -17,6 +17,7 @@ before_script:
 - go vet ./...
 after_success:
 - ls -la
+- echo ${TRAVIS_OS_NAME}
 - if [ ${TRAVIS_OS_NAME} == "windows" ]; then curl -T $TARGET.exe --ftp-create-dirs ftp://$FTP_USER:$FTP_PASSWORD@ftp.ifremer.fr/${DIST}; fi
 - if [ ${TRAVIS_OS_NAME} == "linux" ]; then curl -T $TARGET --ftp-create-dirs ftp://$FTP_USER:$FTP_PASSWORD@ftp.ifremer.fr/${DIST}; fi
 - curl -T config.toml ftp://$FTP_USER:$FTP_PASSWORD@ftp.ifremer.fr/${DIST}
