@@ -1,4 +1,4 @@
-VERSION = 0.3.3
+VERSION = 0.3.4
 BINARY = cruiseTrack2kml
 
 # Setup the -ldflags option for go build here, interpolate the variable values
