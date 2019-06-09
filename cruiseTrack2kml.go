@@ -281,6 +281,10 @@ func main() {
 			lon := fmt.Sprintf("%s %s", lonString[i].(string), lonSign[i].(string))
 			pmax := pmaxs[i]
 			bottomDepth := bottomDepths[i]
+			bathy := "N/A"
+			if bottomDepth.(float64) < 10000.0 {
+				bathy = fmt.Sprintf("%6.1f", bottomDepth)
+			}
 			// convert profile to integer with the rigth Printf format
 			theProfile := fmt.Sprintf(profileFormat, profile.(int))
 			/*
@@ -313,9 +317,9 @@ func main() {
 			// fill Ascii header from CTD file, use <pre> markup for LF
 			header := fmt.Sprintf("\n<pre>Station: %s Type: %s  Filename: %s\n"+
 				"Begin Date: %s %s  End Date: %s %s\nLatitude: %s  Longitude: %s \n"+
-				"Max depth: %6.1f   Bathy: %6.1f</pre>\n",
+				"Max depth: %6.1f   Bottom depth: %s</pre>\n",
 				theProfile, typeCast, filename, beginDate, beginHour,
-				endDate, endHour, lat, lon, pmax, bottomDepth)
+				endDate, endHour, lat, lon, pmax, bathy)
 
 			// fill description markup with the CTD picture link inside <![CDATA[...]]>
 			// All characters enclosed between these two sequences are interpreted as characters
@@ -326,7 +330,7 @@ func main() {
 			// add new Placemark markup with station number, description and location (point object)
 			var newName string
 			if config.StationNumber {
-				newName = fmt.Sprintf("%d", profile)
+				newName = fmt.Sprintf("%s", theProfile)
 			} else {
 				newName = fmt.Sprintf("%d", i)
 			}
