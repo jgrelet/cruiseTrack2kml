@@ -4,7 +4,7 @@ go:
 os:
 #- windows
 - linux
-dist: trusty
+dist: bionic
 env:
   global:
   - DIST=US191/$TARGET/$TRAVIS_OS_NAME/
