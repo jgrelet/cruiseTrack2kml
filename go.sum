@@ -1,0 +1,4 @@
+github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
+github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/gershwinlabs/gokml v0.0.0-20140526215030-bef235f35f9c h1:YRugi8sQVQBkbdQMWq8py4z7LSgKvF8AivuoRI9QN9g=
+github.com/gershwinlabs/gokml v0.0.0-20140526215030-bef235f35f9c/go.mod h1:/U44VTgC0m1DJABiuyS6TJpNItrSs2KAGzcpANhbJUw=
