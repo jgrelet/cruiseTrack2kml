@@ -22,6 +22,7 @@ import (
 // arg var
 var (
 	echo    *bool
+	ver     *bool
 	config  tomlConfig
 	drive   string
 	tsgFile string
@@ -89,12 +90,17 @@ func init() {
 
 	help = flag.Bool("help", false, "display the help...")
 	echo = flag.Bool("echo", false, "display source to stdout")
+	ver  = flag.Bool("version", false, "display program version")
 	flag.StringVar(&configFile, "config", "", "use alternate .toml config file")
 	flag.StringVar(&kmlFile, "output", "", "use alternate  outpout kml file (default is toml Cruise name)")
 	flag.Parse()
 	if *help {
 		pf("\nVersion: %s - %s - %s\n", Version, BuildTime, Author)
 		flag.PrintDefaults()
+		os.Exit(0)
+	}
+	if *ver {
+		pf("\nVersion: %s - %s - %s\n", Version, BuildTime, Author)
 		os.Exit(0)
 	}
 
