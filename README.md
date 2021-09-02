@@ -7,3 +7,4 @@ see example kml file for PIRATA cruise FR26:
 [PIRATA-26.kml](http://www.brest.ird.fr/pirata/images/cruise_tracks/pirata-fr26.kml)
 
 The makefile works only with Linux and Windows git bash
+
