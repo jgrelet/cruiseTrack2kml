@@ -17,6 +17,7 @@ all:
 
 release: $(PLATFORMS)
 
+# cross-compilation, works only with git bash under windows
 $(PLATFORMS):
 ifeq ($(os),linux)	
 	GOOS=$(os) GOARCH=$(arch) go build -o $(BINARY)-'$(os)-$(arch)'.exe -$(LDFLAGS)	
