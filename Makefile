@@ -29,4 +29,4 @@ clean:
 	-rm -f $(BINARY)-*
 	-rm -f $(BINARY).exe
 	
-.PHONY: release $(PLATFORMS) clean run allos simulgps
+.PHONY: release $(PLATFORMS) clean all
