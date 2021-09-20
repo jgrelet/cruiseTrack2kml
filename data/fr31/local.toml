@@ -1,0 +1,48 @@
+# this is a configuration file for cruiseTrack2kml program
+
+cruise = "PIRATA-FR31"
+ship = "THALASSA"
+sizePlots = 700
+stationNumber = true
+
+[ctd]
+File = "/PIRATA-FR31/data-processing/CTD/ascii/pirata-fr31.ctd"
+Prefix = 3
+Skip = 1
+Split = "PRFL,1,int,BEGIN_DATE,2,string,BEGIN_TIME,3,string,END_DATE,4,string,END_TIME,5,string,LAT,6,string,LAT_S,7,string,LON,8,string,LON_S,9,string,PMAX,10,float64,BOTTOM_DEPTH,11,float64"
+#Plots = "http://192.168.51.217/PIRATA-FR31/CTD/downcast/dfr31%s.jpg"
+Plots = "http://192.168.51.217/PIRATA-FR31/CTD/python/PIRATA-FR31-%s_CTD.png"
+
+[xbt]
+File = "/PIRATA-FR31/data-processing/CELERITE/ascii/pirata-fr31.xbt"
+Prefix = 3
+Skip = 2
+Split = "PRFL,1,int,BEGIN_DATE,2,string,BEGIN_TIME,3,string,LAT,4,string,LAT_S,5,string,LON,6,string,LON_S,7,string,PMAX,8,float64,PROBE,9,string"
+Plots = "http://192.168.51.217/PIRATA-FR31/CELERITE/PIRATA-FR31-%s_XBT.png"
+
+[adcp]
+File = "/PIRATA-FR31/data-processing/LADCP/ascii/pirata-fr31.adcp"
+Prefix = 3
+Skip = 3
+Split = "PRFL,1,int,BEGIN_DATE,2,string,BEGIN_TIME,3,string,LAT,4,string,LAT_S,5,string,LON,6,string,LON_S,7,string,PMAX,8,float64"
+Plots = "http://192.168.51.217/PIRATA-FR31/LADCP/PIRATA-FR31-%s_ADCP.png"
+
+
+[tsg]
+#File = "none"
+#File = "/PIRATA-FR31/data-processing/THERMO/ascii/pirata-fr31.gps"
+File = "/PIRATA-FR31/data-processing/THERMO/ascii/pirata-fr31_tsg"
+Skip = 2
+#Split = "LATITUDE,2,float64,LONGITUDE,3,float64"
+Split = "LATITUDE,3,float64,LONGITUDE,4,float64"
+Plots = "http://192.168.51.217/PIRATA-FR31/THERMO/PIRATA-FR31_TSG_COLCOR_SCATTER.png"
+
+[windows]
+# run on cmd:
+# %GOBIN%/cruiseTrack2kml.exe -config local.toml
+Drive = "m:"
+
+[unix]
+# run on Linux or Mingw
+# $GOBIN/cruiseTrack2kml.exe -config local.toml
+Drive = "/m"
