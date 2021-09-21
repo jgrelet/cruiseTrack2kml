@@ -8,10 +8,13 @@ elevation = 0
 ctdfile = 'data/amazomix/OS_AMAZOMIX_CTD.nc'
 xbtfile = 'data/amazomix/OS_AMAZOMIX_XBT.nc'
 tsgfile = 'data/amazomix/OS_AMAZOMIX_TSG.nc'
+kml_file = "amazomix.kml"
 
 ctd = Dataset(ctdfile, mode='r')
 xbt = Dataset(xbtfile, mode='r')
 tsg = Dataset(tsgfile, mode='r')
+
+# CTD
 profiles = ctd.variables['PROFILE'][:].tolist()
 ctd_url = "http://www.brest.ird.fr/us191/cruises/amazomix/CTD/AMAZOMIX-{:05d}_CTD.png"
 
@@ -33,14 +36,16 @@ for i in range(0, len(profiles)):
     point.coords=[(ctd.variables['LONGITUDE'][i], ctd.variables['LATITUDE'][i], elevation)]
     point.altitudemode = simplekml.AltitudeMode.relativetoground 
     point.style = style
+print("CTD: {} stations".format(len(profiles)))
 
+# XBT
 profiles = xbt.variables['PROFILE'][:].tolist()
 xbt_url = "http://www.brest.ird.fr/us191/cruises/amazomix/XBT/AMAZOMIX-{:05d}_XBT.png"
 
 
-# plot XBT profiles icons blue
+# plot XBT profiles icons green
 style = simplekml.Style()
-style.iconstyle.color = simplekml.Color.azure  # Make the icon blue
+style.iconstyle.color = simplekml.Color.azure  # Make the icon green
 for i in range(0, len(profiles)):    
 # for i in range(0, 2):  
     url = xbt_url.format(profiles[i]) 
@@ -51,10 +56,32 @@ for i in range(0, len(profiles)):
     point.coords=[(xbt.variables['LONGITUDE'][i], xbt.variables['LATITUDE'][i], elevation)]
     point.altitudemode = simplekml.AltitudeMode.relativetoground 
     point.style = style
+print("XBT: {} profiles".format(len(profiles)))
 
+# TSG
+data = tsg.variables['TIME'][:].tolist()
+tsg_url = "http://www.brest.ird.fr/us191/cruises/amazomix/TSG/AMAZOMIX_TSG_COLCOR_SCATTER.png"
 
-kml.save("amazomix.kml")
-print(kml.kml())
+# plot TSG data as lineString in blue
+style = simplekml.Style()
+style.linestyle.color = simplekml.Color.blue  # Make the line blue
+style.linestyle.width = 3
+url = tsg_url.format(profiles[i]) 
+cdata = '<![CDATA[\n<img src={} width={:d} />]]>'.format(url, 700)     
+ls = kml.newlinestring()
+ls.name="TSG - SSP/SSS"
+ls.description = cdata
+ls.altitudemode = simplekml.AltitudeMode.relativetoground 
+ls.style = style
+for i in range(0, len(data)):    
+# for i in range(0, 2):  
+    ls.coords.addcoordinates([(tsg.variables['LONGITUDE'][i], 
+        tsg.variables['LATITUDE'][i])])
+print("TSG: {} data".format(len(data)))
+
+kml.save(kml_file)
+print("File {} saved".format(kml_file))
+#print(kml.kml())
 ctd.close()
 xbt.close()
 tsg.close()
