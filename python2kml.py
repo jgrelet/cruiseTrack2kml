@@ -27,7 +27,6 @@ style.iconstyle.icon.href = 'http://maps.google.com/mapfiles/kml/pushpin/wht-pus
 
 # plot CTD station icons red
 for i in range(0, len(profiles)):    
-# for i in range(0, 2):  
     url = ctd_url.format(profiles[i]) 
     cdata = '<![CDATA[\n<img src={} width={:d} />]]>'.format(url, 700)     
     point = kml.newpoint()
@@ -42,12 +41,11 @@ print("CTD: {} stations".format(len(profiles)))
 profiles = xbt.variables['PROFILE'][:].tolist()
 xbt_url = "http://www.brest.ird.fr/us191/cruises/amazomix/XBT/AMAZOMIX-{:05d}_XBT.png"
 
-
 # plot XBT profiles icons green
 style = simplekml.Style()
 style.iconstyle.color = simplekml.Color.azure  # Make the icon green
+
 for i in range(0, len(profiles)):    
-# for i in range(0, 2):  
     url = xbt_url.format(profiles[i]) 
     cdata = '<![CDATA[\n<img src={} width={:d} />]]>'.format(url, 700)     
     point = kml.newpoint()
@@ -66,15 +64,14 @@ tsg_url = "http://www.brest.ird.fr/us191/cruises/amazomix/TSG/AMAZOMIX_TSG_COLCO
 style = simplekml.Style()
 style.linestyle.color = simplekml.Color.blue  # Make the line blue
 style.linestyle.width = 3
-url = tsg_url.format(profiles[i]) 
-cdata = '<![CDATA[\n<img src={} width={:d} />]]>'.format(url, 700)     
+cdata = '<![CDATA[\n<img src={} width={:d} />]]>'.format(tsg_url, 500)     
 ls = kml.newlinestring()
-ls.name="TSG - SSP/SSS"
+ls.name="TSG - SSTP/SSPS"
 ls.description = cdata
-ls.altitudemode = simplekml.AltitudeMode.relativetoground 
+#ls.altitudemode = simplekml.AltitudeMode.relativetoground 
 ls.style = style
+
 for i in range(0, len(data)):    
-# for i in range(0, 2):  
     ls.coords.addcoordinates([(tsg.variables['LONGITUDE'][i], 
         tsg.variables['LATITUDE'][i])])
 print("TSG: {} data".format(len(data)))
