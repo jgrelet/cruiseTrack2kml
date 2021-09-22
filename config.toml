@@ -1,33 +1,34 @@
 # this is a configuration file for cruiseTrack2kml program
 
-cruise = "SARGASSE"
+cruise = "AMAZOMIX"
 ship = "ANTEA"
 sizePlots = 700
 stationNumber = true
+file = "netcdf"
+time = 'TIME'
+latitude = 'LATITUDE'
+longitude = 'LONGITUDE'
+profile = 'PROFILE'
 
 # File is relative from Drive
 [ctd]
-File = "/SARGASSE/data-processing/CTD/ascii/sargasse.ctd"
-Prefix = 2
-Skip = 1
-Split = "PRFL,1,int,BEGIN_DATE,2,string,BEGIN_TIME,3,string,END_DATE,4,string,END_TIME,5,string,LAT,6,string,LAT_S,7,string,LON,8,string,LON_S,9,string,PMAX,10,float64,BOTTOM_DEPTH,11,float64"
-Plots = "http://www.brest.ird.fr/us191/cruises/sargasse/CTD/ds%s.jpg"
+file = 'data/amazomix/OS_AMAZOMIX_CTD.nc'
+name = 'St'
+plots = "http://www.brest.ird.fr/us191/cruises/amazomix/CTD/AMAZOMIX-{:05d}_CTD.png"
 
 [xbt]
-File = "none"
-Prefix = 2
-Skip = 2
-Split = "PRFL,1,int,BEGIN_DATE,2,string,BEGIN_TIME,3,string,LAT,4,string,LAT_S,5,string,LON,6,string,LON_S,7,string,PMAX,8,float64,PROBE,9,string"
-Plots = "http://www.brest.ird.fr/us191/cruises/sargasse/XBT/SARGASSE-%s_XBT.png"
+#file = "none"
+file = 'data/amazomix/OS_AMAZOMIX_XBT.nc'
+name = 'Xbt'
+plots = "http://www.brest.ird.fr/us191/cruises/amazomix/XBT/AMAZOMIX-{:05d}_XBT.png"
 
 [tsg]
-File = "/SARGASSE/data-processing/THERMO/ascii/sargasse-raw.gps"
-Skip = 2
-Split = "LATITUDE,2,float64,LONGITUDE,3,float64"
-Plots = "http://www.brest.ird.fr/us191/cruises/sargasse/TSG/SARGASSE_TSG_COLCOR_SCATTER.png"
+file = "data/amazomix/OS_AMAZOMIX_TSG.nc"
+params = 'SSPS,SSTP'
+plots = "http://www.brest.ird.fr/us191/cruises/amazomix/TSG/AMAZOMIX_TSG_COLCOR_SCATTER.png"
 
 [windows]
-Drive = "m:"
+drive = "m:"
 
 [unix]
-Drive = "/m"
+drive = "/m"

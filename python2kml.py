@@ -51,76 +51,82 @@ if __name__ == "__main__":
     cruise = cfg['cruise'].lower()
     kml_file = f'{cruise}.kml'
 
-    # open netcdf files, add checking here
-    ctd = Dataset(cfg['ctd']['File'], mode='r')
-    xbt = Dataset(cfg['xbt']['File'], mode='r')
-    tsg = Dataset(cfg['tsg']['File'], mode='r')
-
     # CTD
-    profiles = ctd.variables[cfg['profile']][:].tolist()
-    ctd_url = "http://www.brest.ird.fr/us191/cruises/amazomix/CTD/AMAZOMIX-{:05d}_CTD.png"
+    if cfg['ctd']['file'] != 'none':
+        ctd = Dataset(cfg['ctd']['file'], mode='r')
+        profiles = ctd.variables[cfg['profile']][:].tolist()
+        ctd_url = "http://www.brest.ird.fr/us191/cruises/amazomix/CTD/AMAZOMIX-{:05d}_CTD.png"
 
-    kml = simplekml.Kml()
-    style = simplekml.Style()
-    style.iconstyle.color = simplekml.Color.red  # Make the icon red
-    style.iconstyle.scale = 1
-    style.iconstyle.icon.href = 'http://maps.google.com/mapfiles/kml/pushpin/wht-pushpin.png'
-    #style.iconstyle.icon.href = 'http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png'
+        kml = simplekml.Kml()
+        style = simplekml.Style()
+        style.iconstyle.color = simplekml.Color.red  # Make the icon red
+        style.iconstyle.scale = 1
+        style.iconstyle.icon.href = 'http://maps.google.com/mapfiles/kml/pushpin/wht-pushpin.png'
+        #style.iconstyle.icon.href = 'http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png'
 
-    # plot CTD station icons red
-    for i in range(0, len(profiles)):    
-        url = ctd_url.format(profiles[i]) 
-        cdata = '<![CDATA[\n<img src={} width={:d} />]]>'.format(url, 700)     
-        point = kml.newpoint()
-        point.name="{}{:05d}".format(cfg['ctd']['name'], profiles[i])
-        point.description = "CTD Station: {:05d}\n{}".format(profiles[i], cdata)
-        point.coords=[(ctd.variables[cfg['longitude']][i], ctd.variables[cfg['latitude']][i], elevation)]
-        point.altitudemode = simplekml.AltitudeMode.relativetoground 
-        point.style = style
-    print("CTD: {} stations".format(len(profiles)))
+        # plot CTD station icons red
+        for i in range(0, len(profiles)):    
+            url = ctd_url.format(profiles[i]) 
+            cdata = '<![CDATA[\n<img src={} width={:d} />]]>'.format(url, 700)     
+            point = kml.newpoint()
+            field_size = cfg['ctd']['nameFormat']
+            point.name="{}{:{witdh}d}".format(cfg['ctd']['name'], profiles[i], witdh=field_size)
+            point.description = "CTD Station: {:05d}\n{}".format(profiles[i], cdata)
+            point.coords=[(ctd.variables[cfg['longitude']][i], ctd.variables[cfg['latitude']][i], elevation)]
+            point.altitudemode = simplekml.AltitudeMode.relativetoground 
+            point.style = style
+        print("CTD: {} stations".format(len(profiles)))
+        ctd.close()
 
     # XBT
-    profiles = xbt.variables[cfg['profile']][:].tolist()
-    xbt_url = "http://www.brest.ird.fr/us191/cruises/amazomix/XBT/AMAZOMIX-{:05d}_XBT.png"
+    if cfg['xbt']['file'] != 'none':
+        xbt = Dataset(cfg['xbt']['file'], mode='r')
+        profiles = xbt.variables[cfg['profile']][:].tolist()
+        xbt_url = "http://www.brest.ird.fr/us191/cruises/amazomix/XBT/AMAZOMIX-{:05d}_XBT.png"
 
-    # plot XBT profiles icons green
-    style = simplekml.Style()
-    style.iconstyle.color = simplekml.Color.azure  # Make the icon green
+        # plot XBT profiles icons green
+        style = simplekml.Style()
+        style.iconstyle.color = simplekml.Color.azure  # Make the icon green
 
-    for i in range(0, len(profiles)):    
-        url = xbt_url.format(profiles[i]) 
-        cdata = '<![CDATA[\n<img src={} width={:d} />]]>'.format(url, 700)     
-        point = kml.newpoint()
-        point.name="{}{:03d}".format(cfg['xbt']['name'], profiles[i])
-        point.description = "XBT Profile: {:05d}\n{}".format(profiles[i], cdata)
-        point.coords=[(xbt.variables[cfg['longitude']][i], xbt.variables[cfg['latitude']][i], elevation)]
-        point.altitudemode = simplekml.AltitudeMode.relativetoground 
-        point.style = style
-    print("XBT: {} profiles".format(len(profiles)))
+        for i in range(0, len(profiles)):    
+            url = xbt_url.format(profiles[i]) 
+            cdata = '<![CDATA[\n<img src={} width={:d} />]]>'.format(url, 700)     
+            point = kml.newpoint()
+            field_size = cfg['xbt']['nameFormat']
+            point.name='{}{:{witdh}d}'.format(cfg['xbt']['name'], profiles[i], witdh=field_size)
+            point.description = "XBT Profile: {:05d}\n{}".format(profiles[i], cdata)
+            point.coords=[(xbt.variables[cfg['longitude']][i], xbt.variables[cfg['latitude']][i], elevation)]
+            point.altitudemode = simplekml.AltitudeMode.relativetoground 
+            point.style = style
+        print("XBT: {} profiles".format(len(profiles)))
+        xbt.close()
 
     # TSG
-    data = tsg.variables[cfg['time']][:].tolist()
-    tsg_url = "http://www.brest.ird.fr/us191/cruises/amazomix/TSG/AMAZOMIX_TSG_COLCOR_SCATTER.png"
+    if cfg['tsg']['file'] != 'none':
+        tsg = Dataset(cfg['tsg']['file'], mode='r')
+        data = tsg.variables[cfg['time']][:].tolist()
+        tsg_url = "http://www.brest.ird.fr/us191/cruises/amazomix/TSG/AMAZOMIX_TSG_COLCOR_SCATTER.png"
 
-    # plot TSG data as lineString in blue
-    style = simplekml.Style()
-    style.linestyle.color = simplekml.Color.blue  # Make the line blue
-    style.linestyle.width = 3
-    cdata = '<![CDATA[\n<img src={} width={:d} />]]>'.format(tsg_url, 500)     
-    ls = kml.newlinestring()
-    ls.name = f"TSG - {cfg['tsg']['params']}"
-    ls.description = cdata
-    #ls.altitudemode = simplekml.AltitudeMode.relativetoground 
-    ls.style = style
+        # plot TSG data as lineString in blue
+        style = simplekml.Style()
+        style.linestyle.color = simplekml.Color.blue  # Make the line blue
+        style.linestyle.width = 3
+        cdata = '<![CDATA[\n<img src={} width={:d} />]]>'.format(tsg_url, 500)     
+        ls = kml.newlinestring()
+        ls.name = f"TSG - {cfg['tsg']['params']}"
+        ls.description = cdata
+        #ls.altitudemode = simplekml.AltitudeMode.relativetoground 
+        ls.style = style
 
-    for i in range(0, len(data)):    
-        ls.coords.addcoordinates([(tsg.variables[cfg['longitude']][i], 
-            tsg.variables[cfg['latitude']][i])])
-    print("TSG: {} data".format(len(data)))
+        for i in range(0, len(data)):    
+            ls.coords.addcoordinates([(tsg.variables[cfg['longitude']][i], 
+                tsg.variables[cfg['latitude']][i])])
+        print("TSG: {} data".format(len(data)))
+        tsg.close()
 
     kml.save(kml_file)
     print("File {} saved".format(kml_file))
     #print(kml.kml())
-    ctd.close()
-    xbt.close()
-    tsg.close()
+    
+  
+    
