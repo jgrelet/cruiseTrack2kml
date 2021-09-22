@@ -47,19 +47,17 @@ if __name__ == "__main__":
 
     # read config Toml file and get the physical parameter list (Roscop code) for the specified instrument
     cfg = toml.load(args.config)
-    print(cfg)
+    logging.debug(cfg)
+    cruise = cfg['cruise'].lower()
+    kml_file = f'{cruise}.kml'
 
-    ctdfile = 'data/amazomix/OS_AMAZOMIX_CTD.nc'
-    xbtfile = 'data/amazomix/OS_AMAZOMIX_XBT.nc'
-    tsgfile = 'data/amazomix/OS_AMAZOMIX_TSG.nc'
-    kml_file = "amazomix.kml"
-
-    ctd = Dataset(ctdfile, mode='r')
-    xbt = Dataset(xbtfile, mode='r')
-    tsg = Dataset(tsgfile, mode='r')
+    # open netcdf files, add checking here
+    ctd = Dataset(cfg['ctd']['File'], mode='r')
+    xbt = Dataset(cfg['xbt']['File'], mode='r')
+    tsg = Dataset(cfg['tsg']['File'], mode='r')
 
     # CTD
-    profiles = ctd.variables['PROFILE'][:].tolist()
+    profiles = ctd.variables[cfg['profile']][:].tolist()
     ctd_url = "http://www.brest.ird.fr/us191/cruises/amazomix/CTD/AMAZOMIX-{:05d}_CTD.png"
 
     kml = simplekml.Kml()
@@ -74,15 +72,15 @@ if __name__ == "__main__":
         url = ctd_url.format(profiles[i]) 
         cdata = '<![CDATA[\n<img src={} width={:d} />]]>'.format(url, 700)     
         point = kml.newpoint()
-        point.name="ctd {:05d}".format(profiles[i])
+        point.name="{}{:05d}".format(cfg['ctd']['name'], profiles[i])
         point.description = "CTD Station: {:05d}\n{}".format(profiles[i], cdata)
-        point.coords=[(ctd.variables['LONGITUDE'][i], ctd.variables['LATITUDE'][i], elevation)]
+        point.coords=[(ctd.variables[cfg['longitude']][i], ctd.variables[cfg['latitude']][i], elevation)]
         point.altitudemode = simplekml.AltitudeMode.relativetoground 
         point.style = style
     print("CTD: {} stations".format(len(profiles)))
 
     # XBT
-    profiles = xbt.variables['PROFILE'][:].tolist()
+    profiles = xbt.variables[cfg['profile']][:].tolist()
     xbt_url = "http://www.brest.ird.fr/us191/cruises/amazomix/XBT/AMAZOMIX-{:05d}_XBT.png"
 
     # plot XBT profiles icons green
@@ -93,15 +91,15 @@ if __name__ == "__main__":
         url = xbt_url.format(profiles[i]) 
         cdata = '<![CDATA[\n<img src={} width={:d} />]]>'.format(url, 700)     
         point = kml.newpoint()
-        point.name="xbt {:03d}".format(profiles[i])
+        point.name="{}{:03d}".format(cfg['xbt']['name'], profiles[i])
         point.description = "XBT Profile: {:05d}\n{}".format(profiles[i], cdata)
-        point.coords=[(xbt.variables['LONGITUDE'][i], xbt.variables['LATITUDE'][i], elevation)]
+        point.coords=[(xbt.variables[cfg['longitude']][i], xbt.variables[cfg['latitude']][i], elevation)]
         point.altitudemode = simplekml.AltitudeMode.relativetoground 
         point.style = style
     print("XBT: {} profiles".format(len(profiles)))
 
     # TSG
-    data = tsg.variables['TIME'][:].tolist()
+    data = tsg.variables[cfg['time']][:].tolist()
     tsg_url = "http://www.brest.ird.fr/us191/cruises/amazomix/TSG/AMAZOMIX_TSG_COLCOR_SCATTER.png"
 
     # plot TSG data as lineString in blue
@@ -110,14 +108,14 @@ if __name__ == "__main__":
     style.linestyle.width = 3
     cdata = '<![CDATA[\n<img src={} width={:d} />]]>'.format(tsg_url, 500)     
     ls = kml.newlinestring()
-    ls.name="TSG - SSTP/SSPS"
+    ls.name = f"TSG - {cfg['tsg']['params']}"
     ls.description = cdata
     #ls.altitudemode = simplekml.AltitudeMode.relativetoground 
     ls.style = style
 
     for i in range(0, len(data)):    
-        ls.coords.addcoordinates([(tsg.variables['LONGITUDE'][i], 
-            tsg.variables['LATITUDE'][i])])
+        ls.coords.addcoordinates([(tsg.variables[cfg['longitude']][i], 
+            tsg.variables[cfg['latitude']][i])])
     print("TSG: {} data".format(len(data)))
 
     kml.save(kml_file)
