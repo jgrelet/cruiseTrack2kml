@@ -10,7 +10,7 @@ The makefile works only with Linux and Windows git bash
 
 ## update go packages
 
-'''bash
+```bash
 go get -u ./...
 go mod tidy
-'''
+```
