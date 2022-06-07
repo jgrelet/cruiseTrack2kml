@@ -1,6 +1,6 @@
 module github.com/jgrelet/cruiseTrack2kml
 
-go 1.17
+go 1.18
 
 require (
 	github.com/BurntSushi/toml v1.1.0
@@ -11,7 +11,6 @@ require (
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/stretchr/objx v0.4.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
